@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent" >
+
+	<LinearLayout android:id="@+id/button_bar"
+		android:layout_centerInParent="true"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_horizontal"
+		android:orientation="horizontal" >
+		<Button android:id="@+id/button_start"
+			android:layout_width="150sp"
+			android:layout_height="wrap_content"
+			android:drawableLeft="@android:drawable/ic_media_play"
+			android:onClick="startOrPauseTimer"
+			android:text="@string/start" />
+		<ImageButton android:id="@+id/button_reset"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:onClick="resetTimer"
+			android:src="@android:drawable/ic_popup_sync" />
+	</LinearLayout>
+
+	<ProgressBar android:id="@+id/timer_progress"
+		android:layout_above="@id/button_bar"
+		android:layout_marginBottom="20dp"
+		android:layout_centerInParent="true"
+		style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+		android:layout_width="190sp"
+		android:layout_height="wrap_content"
+		android:layout_marginRight="8dp"
+		/>
+
+	<TextView android:id="@+id/repeat_display"
+		android:layout_above="@id/button_bar"
+		android:layout_toRightOf="@id/timer_progress"
+		android:layout_alignTop="@id/timer_progress"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="" />
+
+	<TextView android:id="@+id/timer_display"
+		android:layout_above="@id/timer_progress"
+		android:layout_marginBottom="16dp"
+		android:layout_centerInParent="true"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:background="@drawable/border"
+		android:textSize="40sp"
+		android:textStyle="bold"
+		android:typeface="monospace"
+		android:text="" />
+
+</RelativeLayout>
+

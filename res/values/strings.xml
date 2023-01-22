@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">PPMT</string>
+	<string name="app_subtitle">Pāli Platform Meditation Timer</string>
+	<string name="quit">Quit</string>
+	<string name="reset">Reset</string>
+	<string name="settings">Settings</string>
+	<string name="about">About</string>
+	<string name="timer">Timer</string>
+	<string name="live">Live</string>
+	<string name="start">START</string>
+	<string name="pause">PAUSE</string>
+	<string name="resume">RESUME</string>
+
+	<string name="interval_title">Interval time</string>
+	<string name="interval_dialog_title">Interval time to use:</string>
+	<string name="repeat_title">Repeat</string>
+	<string name="repeat_dialog_title">Number of repeat:</string>
+	<string name="sound_title">Sound</string>
+	<string name="sound_dialog_title">Sound to use:</string>
+	<string name="click_title">Leading click</string>
+	<string name="click_dialog_title">Leading click to use:</string>
+	<string name="preparation_title">Preparation</string>
+	<string name="preparation_summ_yes">Use 10-second preparation</string>
+	<string name="preparation_summ_no">No preparation</string>
+
+	<string name="bell_tiny">Tiny bell</string>
+	<string name="bell_small">Small bell</string>
+	<string name="bell_large">Large bell</string>
+
+	<string name="noti_message">Meditation timer is running</string>
+
+	<string-array name="interval_times_entries">
+		<item>5 min.</item>
+		<item>10 min.</item>
+		<item>15 min.</item>
+		<item>20 min.</item>
+		<item>25 min.</item>
+		<item>30 min.</item>
+		<item>60 min.</item>
+	</string-array>
+	<string-array name="interval_times_values">
+		<item>5</item>
+		<item>10</item>
+		<item>15</item>
+		<item>20</item>
+		<item>25</item>
+		<item>30</item>
+		<item>60</item>
+	</string-array>
+
+	<string-array name="repeat_times_entries">
+		<item>Once</item>
+		<item>Twice</item>
+		<item>3 times</item>
+		<item>4 times</item>
+		<item>5 times</item>
+		<item>6 times</item>
+		<item>7 times</item>
+		<item>8 times</item>
+		<item>9 times</item>
+		<item>10 times</item>
+		<item>11 times</item>
+		<item>12 times</item>
+	</string-array>
+	<string-array name="repeat_times_values">
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+		<item>4</item>
+		<item>5</item>
+		<item>6</item>
+		<item>7</item>
+		<item>8</item>
+		<item>9</item>
+		<item>10</item>
+		<item>11</item>
+		<item>12</item>
+	</string-array>
+
+	<string-array name="sound_entries">
+		<item>Tiny bell</item>
+		<item>Small bell</item>
+		<item>Large bell</item>
+	</string-array>
+	<string-array name="sound_values">
+		<item>tiny</item>
+		<item>small</item>
+		<item>large</item>
+	</string-array>
+
+	<string-array name="click_entries">
+		<item>No click</item>
+		<item>Only twice at the last bell</item>
+		<item>2 clicks at most</item>
+		<item>3 clicks at most</item>
+		<item>4 clicks at most</item>
+		<item>5 clicks at most</item>
+		<item>6 clicks at most</item>
+	</string-array>
+	<string-array name="click_values">
+		<item>0</item>
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+		<item>4</item>
+		<item>5</item>
+		<item>6</item>
+	</string-array>
+
+	<string name="about_text">
+		<b>Pāli Platform Meditation Timer</b> 1.0\n
+		<small>(Foreground Player version)</small>\n
+		<small>Licensed under the Apache License, Version 2.0</small>\n
+		\n
+		<i>A minimalist but usable med-timer</i>\n
+		<small>• Only core Android library is used, up to API level 19\n
+		• Android 4.4 is the minimum requirement\n
+		• The program should also work in modern Androids\n
+		\n
+		<b>Simple uses:</b>\n
+		• Go to Settings\n
+		• Select an interval between 5-60 minutes\n
+		• Select the repeat up to 12 times\n
+		• Select the alarm either bells or TTS\n
+		• Select if leading clicks are also added\n
+		• Select if 10-second preparation is used\n
+		• Go to Timer and press START\n
+		• The session can be paused and resumed\n
+		• Press the reset button to cancel\n
+		• The settings are saved for the next use\n
+		• Use Live mode to arbitrarily ring the bell\n
+		</small>
+		\n
+		\n
+		Copyright © 2023 J. R. Bhaddacak \n
+		<small>See further at <b><i>paliplatform.blogspot.com</i></b></small>
+	</string>
+
+</resources>

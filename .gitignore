@@ -1,0 +1,9 @@
+obj/
+*.dex
+*.apk
+*.idsig
+*.jks
+*.sh
+*.vim
+tags
+gvimrc

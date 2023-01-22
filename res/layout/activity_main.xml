@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical" >
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal" >
+		<Button android:id="@+id/button_timer"
+			android:layout_weight="1"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			style="?android:attr/buttonBarButtonStyle"
+			android:onClick="goTimer"
+			android:text="@string/timer" />
+		<Button android:id="@+id/button_settings"
+			android:layout_weight="1"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			style="?android:attr/buttonBarButtonStyle"
+			android:onClick="goSettings"
+			android:text="@string/settings" />
+		<Button android:id="@+id/button_live"
+			android:layout_weight="1"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			style="?android:attr/buttonBarButtonStyle"
+			android:onClick="goLive"
+			android:text="@string/live" />
+		<Button android:id="@+id/button_about"
+			android:layout_weight="1"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			style="?android:attr/buttonBarButtonStyle"
+			android:onClick="goAbout"
+			android:text="@string/about" />
+	</LinearLayout>
+	<FrameLayout android:id="@+id/fragment_container"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:layout_height="0dp"
+		android:background="?android:attr/detailsElementBackground" />
+</LinearLayout>
