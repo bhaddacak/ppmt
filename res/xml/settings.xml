@@ -32,4 +32,8 @@
 		android:key="pref_preparation"
 		android:title="@string/preparation_title"
 		android:defaultValue="true" />
+	<CheckBoxPreference
+		android:key="pref_keepscreenon"
+		android:title="@string/keepscreenon_title"
+		android:defaultValue="false" />
 </PreferenceScreen>

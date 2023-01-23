@@ -5,13 +5,13 @@ A minimalist but usable med-timer.
 
 This is a pilot project used for my study of Android application development. One main reason of this study is to see the possibility of porting `Pāli Platform`, at least partly, to the Android platform. (There is no certain promise to do so at this stage.) Another personal reason is I want to make a med-timer, an application I use everyday, that satisfies my need.
 
-I had been used med-timer apps since I had old Androids (2.3 or so). Several are good ones. But in new Androids, none of those old apps works if the screen is not kept awake. Most new apps are bloated, yet very few work to my expectation. That made me make my own audio tracks for meditation (mostly silence with bell sounds at the end) and play them with audio players. This method always works in most devices. So I have been forgotten about med-timer apps for years. When I started to learn Android application development, I was tempted to deal with med-timer first. So here I am.
+I had been used med-timer apps since I had old Androids (2.3 or so). Several timers are really good ones. But in new Androids, none of those old apps works if the screen is not kept awake. Most new apps are bloated, yet very few work to my expectation. That made me stop using this kind of apps and instead make my own audio tracks for meditation (mostly silence with bell sounds at the end) and play them with audio players. This method always works in most devices. So I have been forgotten about med-timer apps for years. When I started to learn Android application development, I was tempted to deal with med-timer first. So here I am.
 
-Another key factor that shapes the project is my environment of development. I insist to use only core library, no supports, and without Android Studio. To make it more difficult, I prefer to use my beloved 32-bit Linux laptop. Such a setting is impossible in Google's point of view, because 32-bit SDK and Android Studio are no longer supported.
+Another key factor that shapes the project is my environment of development. I insist to use only Android core library, no supports, and without Android Studio. To make it more difficult, I prefer to use my beloved 32-bit Linux laptop. Such a setting is impossible in Google's point of view, because 32-bit SDK are no longer supported.
 
 Fortunately and thanks to the Debian Android Tools Team, using any 32-bit Debian-based Linux is now possible to write Android applications, with some limitations though. At least, I can learn to write Android apps in my familiar way. That is good to understand how things really work.
 
-The main problem of med-timer apps on Android is they get killed or suppressed by the system when the device goes asleep, under the power management scheme. The strictness varies from brand to brand. For example, none of med-timers, as far as I found, cannot survive my Oppo F7's (ColorOS 7.1/Android 10) aggressive power management when the apps run in sleep-mode, whereas on generic Androids some apps work fine.
+The main problem of med-timer apps on Android is they get killed or suppressed by the system when the device goes asleep, under the power management scheme. The strictness varies from brand to brand. For example, none of med-timers, as far as I found, can survive my Oppo F7's (ColorOS 7.1/Android 10) aggressive power management when the apps run in sleep-mode, whereas on generic Androids some apps work fine.
 
 I experimented with several implementations to tackle this problem. I see this as a problem because it makes no sense that while you meditate and you have to keep the device's screen on, just sounds are desirable. Using CountDownTimer as background service fails, as well as, the foreground version of it which is a little better but unpredictable. Using AlarmManager fails sometimes (I still have no clue why it fails or works in some settings).
 
@@ -19,7 +19,7 @@ Finally, I apply my own method that I use with my meditation tracks. So, the app
 
 ## Android application development in frugal environment
 
-Now I will explain how I built the project using my 32-bit Linux, and I will mention 64-bit settings briefly at the end. I think those who use Windows and macOS machines have to follow the official way of doing things, e.g., using Android Studio and its ecosystem. So, I hold that non-Linux operating systems are irrelevant to the project.
+Now I will explain how I built the project using my 32-bit Linux, and I will mention 64-bit settings briefly at the end. I think those who use Windows and macOS have to follow the official way of doing things, e.g., using Android Studio and its ecosystem. So, I hold that non-Linux operating systems are irrelevant to the project.
 
 ### Using Debian-based GNU/Linux
 
@@ -45,13 +45,13 @@ Now you can build the app by going to the project's root directory and simply en
 $ make
 ```
 
-In the first build, you will asked to enter your personal information to generate the key file (named `keystore.jks`). Then the app will be signed with this key, so it can be installed or distributed. You have to keep this key file throughout the lifetime of the project's development. If you generate a new key, even with the same information, and sign with it, Android will see the app as a different one. You cannot reinstall or update the app in this case, because the app use the same package name but has different signature.
+In the first build, you will asked to enter your personal information to generate the key file (named `keystore.jks`). Then the app will be signed with this key, so it can be installed or distributed. You have to keep this key file throughout the lifetime of the project's development. If you generate a new key, even with the same information, and sign with it, Android will see the app as a different one. You cannot reinstall or update the app in this case, because the app uses the same package name but has different signature.
 
 If you want to clean the built result, enter `$ make clean`. This will not delete the key file. If you really want to remove it, do it manually. And if you want to just compile the Java code, enter `$ make compile`. These are all options you can do with `make` in this project. If you want to modify the project, you may need to edit the `Makefile`.
 
-The end-product of the build process is **`ppmt-1.0.apk`**. You only can test the app by install it to the real device. The best way to do this is via `adb`. First, you have to enable *Development options* by going to *About phone* and tab *Build number* seven times until the options appear. Go to *Development options*, turn it on and enable *USB debugging*.
+The end-product of the build process is **`ppmt-1.1.apk`**. You only can test the app by install it to a real device. The best way to do this is via `adb`. First, you have to enable *Development options* by going to *About phone* and tab *Build number* seven times until the options appear. Go to *Development options*, turn it on and enable *USB debugging*.
 
-Once you connect your device to the computer, enter this to see whether it is seen by the system:
+Once you connect your device to the computer, you need to accept the connection first, then enter this to see whether it is seen by the system:
 
 ```
 $ adb devices
@@ -60,10 +60,10 @@ $ adb devices
 If you see the device ID, it is connected. Now you can install the app by typing this:
 
 ```
-$ adb install -r ppmt-1.0.apk
+$ adb install -r ppmt-1.1.apk
 ```
 
-With the flag `-r`, the installation will replace the existing with the current one. It has no effect in the first installation. Now you can see the app in your device, and you can test it. To uninstall the app, you need package name. So, in this case, you have to enter this:
+With the flag `-r`, the installation will replace the existing with the current one. It has no effect in the first installation. Now you can see the app in your device, and you can test it. To uninstall the app, you need the package name. So, in this case, you have to enter this:
 
 ```
 $ adb uninstall paliplatform.tools.ppmt
@@ -85,9 +85,9 @@ Using `Toast` can be awkward in some situations. A more viable way of debugging 
 $ adb logcat -d AndroidRuntime:E *:S | grep '01-19 13:2'
 ```
 
-Because `logcat` can overwhelm you with many irrelevant messages, we have to filter them properly. In this case, we focus only on tag `AndroidRuntime` with `Error` (E) status, and silence the rest `(*:S)`. Then we select only messages with a recent timestamp with `grep`. Do not use the time I show here, use your own time. With a relevant timestamp, you can see what went wrong when the program crashed. Please check the time on your device not the computer. We use flag `-d` to stop `logcat` showing new messages, so we see only what has happened. 
+Because `logcat` can overwhelm you with many irrelevant messages, we have to filter them properly. In this case, we focus only on tag `AndroidRuntime` with `Error` (E) status, and silence the rest (`*:S`). Then we select only messages with a recent time stamp with `grep`. Do not use the time I show here, use your own time. With a relevant time stamp, you can see what went wrong when the program crashed. Please check the time on your device, not on the computer. We use flag `-d` to stop `logcat` showing new messages, so we see only what has happened. 
 
-For a more sophisticated way of debugging, you can make your own tag and insert your messages into the log system by using `android.util.Log`. In the class `Log`, we have 5 methods, i.e., `Log.v(), Log.d(), Log.i(), Log.w(), and Log.e()`, according to status: `VERBOSE, DEBUG, INFO, WARN, and ERROR` respectively. I use mostly `Log.d()`. 
+For a more sophisticated way of debugging, you can make your own tag and insert your messages into the log system by using `android.util.Log`. In the class `Log`, we have 5 methods, i.e., Log.v(), Log.d(), Log.i(), Log.w(), and Log.e(), according to status: VERBOSE, DEBUG, INFO, WARN, and ERROR respectively. I use mostly `Log.d()`. 
 
 To use the methods, you have to name your tag properly so that your can filter it afterwards. Here is an example to check the variable `i` in your code:
 
@@ -102,11 +102,11 @@ Once you add the logging in your code, you can check it when the app has run by 
 ```
 $ adb logcat -d MyAwesomeActivity:D *:S
 ```
-If you run the app several times, filtering further with a proper timestamp (see above) can be helpful. When you finish your debugging process and want to make a release, do not forget to remove the logging from your code. 
+If you run the app several times, filtering further with a proper time stamp (see above) can be helpful. When you finish your debugging and want to make a release, do not forget to remove the logging from your code. 
 
 With all these simple tools mentioned, you can develop any kind of Android application that the core library (the platform) allows you.
 
-(It is possible to include the old support libraries, but not the newer Jetpack libraries, to the project to have slicker UI. We have to use another `Makefile` (not provided here) in this case. I see this unnecessary. It just makes the product bigger but with the same functionality. So, I make no effort to show an example of this here. For those who need a guideline, see links below.)
+(It is possible to include the old support libraries, but not the newer Jetpack libraries, to the project to have slicker UI. We have to use another `Makefile` (not provided here) in this case. I see this unnecessary. It just makes the product bigger but with the same functionality. So, I make no effort to show an example of this here. For those who need a guideline, see demos from links below.)
 
 ### Notes on 64-bit machines
 
@@ -120,7 +120,7 @@ As a part of Android tools, `sdkmanager` is used for downloading things from Goo
 $ sudo apt-get install sdkmanager
 ```
 
-If not, you can use this version: [sdkmanager](https://pypi.org/project/sdkmanager/). This program uses python to run. If you use this, download the package, unpack it, go to its directory and replace `sdkmanager` below with `./sdkmanager.py`. Once you have the tool installed, you can check the availability by this command (the Internet connection needed):
+If not, you can use this python version: [sdkmanager](https://pypi.org/project/sdkmanager/). If you use this, make sure you have python installed, download the package, unpack it, go to its directory, then replace `sdkmanager` below with `./sdkmanager.py`. Once you have the tool, you can check the download availability by this command (the Internet connection needed):
 
 ```
 $ sdkmanager --list

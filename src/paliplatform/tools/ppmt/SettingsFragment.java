@@ -70,6 +70,11 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 								? getResources().getString(R.string.preparation_summ_yes)
 								: getResources().getString(R.string.preparation_summ_no);
 			pref.setSummary(summPrepare);
+		} else if ("pref_keepscreenon".equals(key)) {
+			final String summKeep = sharedPreferences.getBoolean(key, true)
+								? getResources().getString(R.string.keepscreenon_summ_yes)
+								: getResources().getString(R.string.keepscreenon_summ_no);
+			pref.setSummary(summKeep);
 		}
 	}
 
@@ -83,6 +88,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 		updateSummary(prefs, "pref_sound");
 		updateSummary(prefs, "pref_click");
 		updateSummary(prefs, "pref_preparation");
+		updateSummary(prefs, "pref_keepscreenon");
 	}
 
 	@Override

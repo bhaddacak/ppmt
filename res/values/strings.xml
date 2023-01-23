@@ -23,12 +23,17 @@
 	<string name="preparation_title">Preparation</string>
 	<string name="preparation_summ_yes">Use 10-second preparation</string>
 	<string name="preparation_summ_no">No preparation</string>
+	<string name="keepscreenon_title">Keep screen on</string>
+	<string name="keepscreenon_summ_yes">Stay awake during the session</string>
+	<string name="keepscreenon_summ_no">Use the system sleep setting</string>
 
 	<string name="bell_tiny">Tiny bell</string>
 	<string name="bell_small">Small bell</string>
 	<string name="bell_large">Large bell</string>
 
-	<string name="noti_message">Meditation timer is running</string>
+	<string name="tts_prepare">The session started.</string>
+	<string name="tts_loop">Minutes passed.</string>
+	<string name="tts_last">The session ended.</string>
 
 	<string-array name="interval_times_entries">
 		<item>5 min.</item>
@@ -82,16 +87,18 @@
 		<item>Tiny bell</item>
 		<item>Small bell</item>
 		<item>Large bell</item>
+		<item>Text-to-speech</item>
 	</string-array>
 	<string-array name="sound_values">
 		<item>tiny</item>
 		<item>small</item>
 		<item>large</item>
+		<item>tts</item>
 	</string-array>
 
 	<string-array name="click_entries">
 		<item>No click</item>
-		<item>Only twice at the last bell</item>
+		<item>Only twice at the last sound</item>
 		<item>2 clicks at most</item>
 		<item>3 clicks at most</item>
 		<item>4 clicks at most</item>
@@ -109,7 +116,7 @@
 	</string-array>
 
 	<string name="about_text">
-		<b>Pāli Platform Meditation Timer</b> 1.0\n
+		<b>Pāli Platform Meditation Timer</b> 1.1\n
 		<small>(Foreground Player version)</small>\n
 		<small>Licensed under the Apache License, Version 2.0</small>\n
 		\n
@@ -117,21 +124,23 @@
 		<small>• Only core Android library is used, up to API level 19\n
 		• Android 4.4 is the minimum requirement\n
 		• The program should also work in modern Androids\n
+		• If necessary, the app\'s restriction has to be disabled\n
+		• If anything fails, please keep the screen on\n
 		\n
 		<b>Simple uses:</b>\n
 		• Go to Settings\n
 		• Select an interval between 5-60 minutes\n
 		• Select the repeat up to 12 times\n
-		• Select the bell size\n
+		• Select the alarm either bells or TTS\n
 		• Select if leading clicks are also added\n
 		• Select if 10-second preparation is used\n
+		• Select if the screen is kept awake\n
 		• Go to Timer and press START\n
 		• The session can be paused and resumed\n
 		• Press the reset button to cancel\n
 		• The settings are saved for the next use\n
 		• Use Live mode to arbitrarily ring the bell\n
 		</small>
-		\n
 		\n
 		Copyright © 2023 J. R. Bhaddacak \n
 		<small>See further at <b><i>paliplatform.blogspot.com</i></b></small>

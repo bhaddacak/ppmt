@@ -38,8 +38,8 @@ public class TimerFragment extends Fragment {
 	enum State { READY, COUNTDOWN, PAUSED }
 	private static final int GUI_UPDATE_INTERVAL = 500;
 	private static final int PREPARE_MILLIS = 10000;
+	private MainActivity mainAct;
 	private SharedPreferences prefs;
-	private PlayerService playerService;
 	private CountDownTimer refreshTimer;
 	private TextView timerDisplay;
 	private TextView repeatDisplay;
@@ -52,25 +52,34 @@ public class TimerFragment extends Fragment {
 	private long totalMillis;
 	private long remMillis;
 	private int lastMillis;
+	private boolean isShowing;
 
     @Override
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+		mainAct = ((MainActivity)getActivity());
 		return inflater.inflate(R.layout.fragment_timer, container, false);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		timerDisplay = (TextView) getActivity().findViewById(R.id.timer_display);
-		repeatDisplay = (TextView) getActivity().findViewById(R.id.repeat_display);
-		timerProgress = (ProgressBar) getActivity().findViewById(R.id.timer_progress);
-		prefs = ((MainActivity)getActivity()).getPrefs();
+		isShowing = true;
+		timerDisplay = (TextView) mainAct.findViewById(R.id.timer_display);
+		repeatDisplay = (TextView) mainAct.findViewById(R.id.repeat_display);
+		timerProgress = (ProgressBar) mainAct.findViewById(R.id.timer_progress);
+		prefs = mainAct.getPrefs();
 		interval = Integer.parseInt(prefs.getString("pref_interval", "15"));
 		repeat = Integer.parseInt(prefs.getString("pref_repeat", "2"));
 		hasPreparation = prefs.getBoolean("pref_preparation", true);
 		preMillis = hasPreparation ? PREPARE_MILLIS : 0;
 		updateStartButton();
 		updateTimerDisplay();
+	}
+
+	@Override
+	public void onPause() {
+		isShowing = false;
+		super.onPause();
 	}
 
 	public State getState() {
@@ -92,11 +101,10 @@ public class TimerFragment extends Fragment {
 	}
 
 	public void resumeRefreshTimer() {
-		playerService = ((MainActivity)getActivity()).getPlayerService();
 		refreshTimer = new CountDownTimer(remMillis, GUI_UPDATE_INTERVAL) {
 			@Override
 			public void onTick(final long millisUntilFinished) {
-				if (playerService.isRunning()) {
+				if (mainAct.isRunning()) {
 					remMillis = millisUntilFinished;
 					updateTimerDisplay();
 				} else {
@@ -109,9 +117,11 @@ public class TimerFragment extends Fragment {
 				refreshTimer = null;
 				currState = State.READY;
 				remMillis = totalMillis;
-				updateTimerDisplay();
+				updateTimerDisplay(true);
 				updateStartButton();
-				((MainActivity)getActivity()).setSettingsEnabled(true);
+				mainAct.setSettingsEnabled(true);
+				if (prefs.getBoolean("pref_keepscreenon", false))
+					mainAct.keepAwake(false);
 			}
 		};
 		refreshTimer.start();
@@ -130,8 +140,13 @@ public class TimerFragment extends Fragment {
 	}
 
 	public void updateTimerDisplay() {
+		updateTimerDisplay(false);
+	}
+
+	public void updateTimerDisplay(final boolean isInit) {
+		if (!isShowing) return;
 		if (timerDisplay == null) return;
-		if (playerService == null || !playerService.isRunning()) {
+		if (!mainAct.isRunning() || isInit) {
 			if (currState == State.READY) {
 				if (hasPreparation)
 					lastMillis =  preMillis;
@@ -139,14 +154,14 @@ public class TimerFragment extends Fragment {
 					lastMillis = interval * 60 * 1000;
 			}
 		} else {
-			if (playerService.getCurrPlayState() == PlayerService.PlayState.BELL) {
-				if (playerService.getCurrRepeat() == 0)
+			if (mainAct.getCurrPlayState() == MainActivity.PlayState.BELL) {
+				if (mainAct.getCurrRepeat() == 0)
 					lastMillis = preMillis;
 				else
 					lastMillis = interval * 60 * 1000;
 			} else {
-				int duration = playerService.getDuration();
-				int position = playerService.getCurrPosition();
+				int duration = mainAct.getDuration();
+				int position = mainAct.getCurrPosition();
 				if (duration >0 && position >= 0)
 					lastMillis = duration - position;
 			}
@@ -159,10 +174,10 @@ public class TimerFragment extends Fragment {
 	private void updateRepeatDisplay() {
 		if (repeatDisplay == null) return;
 		final int curr;
-		if (playerService == null || !playerService.isRunning()) {
+		if (!mainAct.isRunning()) {
 			curr = hasPreparation ? 0 : 1;
 		} else {
-			curr = playerService.getCurrRepeat();
+			curr = mainAct.getCurrRepeat();
 		}
 		repeatDisplay.setText(curr + "/" + repeat);
 	}
@@ -178,22 +193,23 @@ public class TimerFragment extends Fragment {
 	}
 
 	public void updateStartButton(final State state) {
-		final Button butStart = (Button) getActivity().findViewById(R.id.button_start);
+		if (!isShowing) return;
+		final Button butStart = (Button) mainAct.findViewById(R.id.button_start);
 		final Drawable icon;
 		final String text;
 		final int color;
 		if (state == State.COUNTDOWN) {
-			icon = getActivity().getResources().getDrawable(android.R.drawable.ic_media_pause, null);
-			text = getActivity().getResources().getString(R.string.pause);
-			color = getResources().getColor(android.R.color.holo_orange_light, null);
+			icon = mainAct.getResources().getDrawable(android.R.drawable.ic_media_pause, null);
+			text = mainAct.getResources().getString(R.string.pause);
+			color = mainAct.getResources().getColor(android.R.color.holo_orange_light, null);
 		} else if (state == State.PAUSED) {
-			icon = getActivity().getResources().getDrawable(android.R.drawable.ic_media_play, null);
-			text = getActivity().getResources().getString(R.string.resume);
-			color = getResources().getColor(android.R.color.holo_green_light, null);
+			icon = mainAct.getResources().getDrawable(android.R.drawable.ic_media_play, null);
+			text = mainAct.getResources().getString(R.string.resume);
+			color = mainAct.getResources().getColor(android.R.color.holo_green_light, null);
 		} else {
-			icon = getActivity().getResources().getDrawable(android.R.drawable.ic_media_play, null);
-			text = getActivity().getResources().getString(R.string.start);
-			color = getResources().getColor(android.R.color.primary_text_dark, null);
+			icon = mainAct.getResources().getDrawable(android.R.drawable.ic_media_play, null);
+			text = mainAct.getResources().getString(R.string.start);
+			color = mainAct.getResources().getColor(android.R.color.primary_text_dark, null);
 		}
 		icon.setBounds(new Rect(0, 0, icon.getIntrinsicWidth(), icon.getIntrinsicHeight()));
 		butStart.setCompoundDrawables(icon, null, null, null);

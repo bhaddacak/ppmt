@@ -7,7 +7,7 @@ PLATFORM=/usr/lib/android-sdk/platforms/android-23/android.jar
 MINSDK=19
 SRCPATH=src
 APPPATH=$(SRCPATH)/paliplatform/tools/ppmt
-VERSION=1.0
+VERSION=1.1
 OUTPUT=ppmt-$(VERSION)
 OBJPATH=obj
 
@@ -33,7 +33,7 @@ classes.dex: $(CLASSES)
 
 $(CLASSES): $(JAVAS) $(APPPATH)/R.java
 	[ -e $(OBJPATH) ] || mkdir $(OBJPATH)
-	javac -Xlint:-options -Xlint:deprecation -bootclasspath "$(PLATFORM)" -classpath "$(SRCPATH):$(OBJPATH)" -d "$(OBJPATH)" -source 1.7 -target 1.7 $^
+	javac -Xlint:-options -bootclasspath "$(PLATFORM)" -classpath "$(SRCPATH):$(OBJPATH)" -d "$(OBJPATH)" -source 1.7 -target 1.7 $^
 
 $(APPPATH)/R.java res.apk: AndroidManifest.xml res/*
 	aapt package -f -m -I "$(PLATFORM)" -J $(SRCPATH) -S res -M AndroidManifest.xml -F res.apk
