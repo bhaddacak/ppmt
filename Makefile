@@ -7,7 +7,7 @@ PLATFORM=/usr/lib/android-sdk/platforms/android-23/android.jar
 MINSDK=19
 SRCPATH=src
 APPPATH=$(SRCPATH)/paliplatform/tools/ppmt
-VERSION=1.1
+VERSION=1.1.1
 OUTPUT=ppmt-$(VERSION)
 OBJPATH=obj
 

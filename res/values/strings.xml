@@ -116,7 +116,7 @@
 	</string-array>
 
 	<string name="about_text">
-		<b>Pāli Platform Meditation Timer</b> 1.1\n
+		<b>Pāli Platform Meditation Timer</b> 1.1.1\n
 		<small>(Foreground Player version)</small>\n
 		<small>Licensed under the Apache License, Version 2.0</small>\n
 		\n
@@ -134,16 +134,18 @@
 		• Select the alarm either bells or TTS\n
 		• Select if leading clicks are also added\n
 		• Select if 10-second preparation is used\n
-		• Select if the screen is kept awake\n
+		• Select if the device is kept awake\n
 		• Go to Timer and press START\n
 		• The session can be paused and resumed\n
-		• Press the reset button to cancel\n
+		• Press the reset button to cancel the session\n
 		• The settings are saved for the next use\n
+		• Long press the reset button to restore the default settings\n
 		• Use Live mode to arbitrarily ring the bell\n
 		</small>
 		\n
 		Copyright © 2023 J. R. Bhaddacak \n
 		<small>See further at <b><i>paliplatform.blogspot.com</i></b></small>
+		\n
 	</string>
 
 </resources>

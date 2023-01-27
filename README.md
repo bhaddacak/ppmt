@@ -49,7 +49,7 @@ In the first build, you will asked to enter your personal information to generat
 
 If you want to clean the built result, enter `$ make clean`. This will not delete the key file. If you really want to remove it, do it manually. And if you want to just compile the Java code, enter `$ make compile`. These are all options you can do with `make` in this project. If you want to modify the project, you may need to edit the `Makefile`.
 
-The end-product of the build process is **`ppmt-1.1.apk`**. You only can test the app by install it to a real device. The best way to do this is via `adb`. First, you have to enable *Development options* by going to *About phone* and tab *Build number* seven times until the options appear. Go to *Development options*, turn it on and enable *USB debugging*.
+The end-product of the build process is **`ppmt-x.y.z.apk`** (x, y, z are the version number). You only can test the app by install it to a real device. The best way to do this is via `adb`. First, you have to enable *Development options* by going to *About phone* and tab *Build number* seven times until the options appear. Go to *Development options*, turn it on and enable *USB debugging*.
 
 Once you connect your device to the computer, you need to accept the connection first, then enter this to see whether it is seen by the system:
 
@@ -60,7 +60,7 @@ $ adb devices
 If you see the device ID, it is connected. Now you can install the app by typing this:
 
 ```
-$ adb install -r ppmt-1.1.apk
+$ adb install -r ppmt-x.y.z.apk
 ```
 
 With the flag `-r`, the installation will replace the existing with the current one. It has no effect in the first installation. Now you can see the app in your device, and you can test it. To uninstall the app, you need the package name. So, in this case, you have to enter this:
@@ -120,7 +120,7 @@ As a part of Android tools, `sdkmanager` is used for downloading things from Goo
 $ sudo apt-get install sdkmanager
 ```
 
-If not, you can use this python version: [sdkmanager](https://pypi.org/project/sdkmanager/). If you use this, make sure you have python installed, download the package, unpack it, go to its directory, then replace `sdkmanager` below with `./sdkmanager.py`. Once you have the tool, you can check the download availability by this command (the Internet connection needed):
+If not, you can use this Python version: [sdkmanager](https://pypi.org/project/sdkmanager/). If you use this, make sure you have Python installed, download the package, unpack it, go to its directory, then replace `sdkmanager` below with `./sdkmanager.py`. Once you have the tool, you can check the download availability by this command (the Internet connection needed):
 
 ```
 $ sdkmanager --list

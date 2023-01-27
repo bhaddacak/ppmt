@@ -21,8 +21,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
-import android.widget.TextView;
-import android.text.Html;
 
 public class AboutFragment extends Fragment {
 
@@ -30,4 +28,4 @@ public class AboutFragment extends Fragment {
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_about, container, false);
 	}
-}	
+}

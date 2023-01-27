@@ -19,7 +19,6 @@
 		<ImageButton android:id="@+id/button_reset"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:onClick="resetTimer"
 			android:src="@android:drawable/ic_popup_sync" />
 	</LinearLayout>
 
@@ -33,6 +32,24 @@
 		android:layout_marginRight="8dp"
 		/>
 
+	<TextView android:id="@+id/elapse_display"
+		android:layout_above="@id/timer_progress"
+		android:layout_marginBottom="10dp"
+		android:layout_alignLeft="@id/timer_progress"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:typeface="monospace"
+		android:text="" />
+
+	<TextView android:id="@+id/total_display"
+		android:layout_above="@id/timer_progress"
+		android:layout_marginBottom="10dp"
+		android:layout_alignRight="@id/timer_progress"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:typeface="monospace"
+		android:text="" />
+
 	<TextView android:id="@+id/repeat_display"
 		android:layout_above="@id/button_bar"
 		android:layout_toRightOf="@id/timer_progress"
@@ -42,7 +59,7 @@
 		android:text="" />
 
 	<TextView android:id="@+id/timer_display"
-		android:layout_above="@id/timer_progress"
+		android:layout_above="@id/elapse_display"
 		android:layout_marginBottom="16dp"
 		android:layout_centerInParent="true"
 		android:layout_width="wrap_content"

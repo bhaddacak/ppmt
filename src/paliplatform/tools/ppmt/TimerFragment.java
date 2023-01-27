@@ -24,11 +24,13 @@ import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.content.SharedPreferences;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ProgressBar;
 import android.graphics.drawable.Drawable;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
+import android.preference.PreferenceManager;
 
 // for debug
 //~ import android.widget.Toast;
@@ -43,13 +45,15 @@ public class TimerFragment extends Fragment {
 	private CountDownTimer refreshTimer;
 	private TextView timerDisplay;
 	private TextView repeatDisplay;
+	private TextView elapseDisplay;
+	private TextView totalDisplay;
 	private ProgressBar timerProgress;
 	private int interval;
 	private int repeat;
 	private boolean hasPreparation;
 	private int preMillis;
 	private State currState = State.READY;
-	private long totalMillis;
+	private long totalMillis = 0;
 	private long remMillis;
 	private int lastMillis;
 	private boolean isShowing;
@@ -66,12 +70,16 @@ public class TimerFragment extends Fragment {
 		isShowing = true;
 		timerDisplay = (TextView) mainAct.findViewById(R.id.timer_display);
 		repeatDisplay = (TextView) mainAct.findViewById(R.id.repeat_display);
+		elapseDisplay = (TextView) mainAct.findViewById(R.id.elapse_display);
+		totalDisplay = (TextView) mainAct.findViewById(R.id.total_display);
 		timerProgress = (ProgressBar) mainAct.findViewById(R.id.timer_progress);
 		prefs = mainAct.getPrefs();
 		interval = Integer.parseInt(prefs.getString("pref_interval", "15"));
 		repeat = Integer.parseInt(prefs.getString("pref_repeat", "2"));
 		hasPreparation = prefs.getBoolean("pref_preparation", true);
 		preMillis = hasPreparation ? PREPARE_MILLIS : 0;
+		if (totalMillis == 0 || !mainAct.isRunning()) initMillis();
+		setupResetButton();
 		updateStartButton();
 		updateTimerDisplay();
 	}
@@ -90,13 +98,13 @@ public class TimerFragment extends Fragment {
 		currState = state;
 	}
 
-	public void resetMillis() {
+	public void initMillis() {
 		totalMillis = preMillis + interval * 60 * 1000 * repeat;
 		remMillis = totalMillis;
 	}
 
 	public void startRefreshTimer() {
-		resetMillis();
+		initMillis();
 		resumeRefreshTimer();
 	}
 
@@ -132,11 +140,22 @@ public class TimerFragment extends Fragment {
 			refreshTimer.cancel();
 	}
 
-	private String formatMillis(final long millis) {
+	private String formatMillis(final long millis, boolean withHour) {
 		final long sec = millis / 1000;
-		final long minPart = sec / 60;
 		final long secPart = sec % 60;
-		return String.format("%02d:%02d", minPart, secPart);
+		final long hourPart;
+		final long minPart;
+		final String result;
+		if (withHour) {
+			hourPart = sec / 3600;
+			minPart = (sec % 3600) / 60;
+			result = String.format("%02d:%02d:%02d", hourPart, minPart, secPart);
+		} else {
+			hourPart = 0;
+			minPart = sec / 60;
+			result = String.format("%02d:%02d", minPart, secPart);
+		}
+		return result;
 	}
 
 	public void updateTimerDisplay() {
@@ -162,13 +181,14 @@ public class TimerFragment extends Fragment {
 			} else {
 				int duration = mainAct.getDuration();
 				int position = mainAct.getCurrPosition();
-				if (duration >0 && position >= 0)
+				if (duration > 0 && position >= 0)
 					lastMillis = duration - position;
 			}
 		}
-		timerDisplay.setText(formatMillis(lastMillis));
+		timerDisplay.setText(formatMillis(lastMillis, false));
 		updateRepeatDisplay();
 		updateProgressBar();
+		updateElapsedTime();
 	}
 
 	private void updateRepeatDisplay() {
@@ -186,6 +206,13 @@ public class TimerFragment extends Fragment {
 		final long progress = totalMillis - remMillis;
 		timerProgress.setMax((int)totalMillis);
 		timerProgress.setProgress((int)progress);
+	}
+
+	private void updateElapsedTime() {
+		if (elapseDisplay == null || totalDisplay == null) return;
+		final long elapsed = totalMillis - remMillis;
+		elapseDisplay.setText(formatMillis(elapsed, true));
+		totalDisplay.setText(formatMillis(totalMillis, true));
 	}
 
 	public void updateStartButton() {
@@ -215,5 +242,22 @@ public class TimerFragment extends Fragment {
 		butStart.setCompoundDrawables(icon, null, null, null);
 		butStart.setText(text);
 		butStart.setTextColor(color);
+	}
+
+	private void setupResetButton() {
+		final ImageButton butReset = (ImageButton) mainAct.findViewById(R.id.button_reset);
+		butReset.setOnClickListener(new View.OnClickListener() {
+			public void onClick(final View v) {
+				mainAct.resetTimer();
+			}
+		});
+		butReset.setOnLongClickListener(new View.OnLongClickListener() {
+			public boolean onLongClick(final View v) {
+				prefs.edit().clear().commit();
+				PreferenceManager.setDefaultValues(mainAct.getApplicationContext(), R.xml.settings, false);
+				mainAct.resetTimer();
+				return true;
+			}
+		});
 	}
 }

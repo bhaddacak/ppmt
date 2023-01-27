@@ -55,6 +55,7 @@ public class MainActivity extends Activity {
 	private final HashMap<Integer, Integer> bellMap;
 	private MediaPlayer bellPlayer;
 	private MediaPlayer silencePlayer;
+	private TextToSpeech tts;
 	private boolean settingsEnabled;
 	private int interval;
 	private int repeat;
@@ -187,17 +188,19 @@ public class MainActivity extends Activity {
 		timerFragment.updateStartButton();
 	}
 
-	public void resetTimer(final View view) {
+	public void resetTimer() {
 		timerFragment.setState(TimerFragment.State.READY);
 		setSettingsEnabled(true);
 		timerFragment.stopRefreshTimer();
-		timerFragment.resetMillis();
+		timerFragment.initMillis();
 		timerFragment.updateTimerDisplay(true);
 		timerFragment.updateStartButton();
 		runningState = false;
 		stopPlayers();
 		if (prefs.getBoolean("pref_keepscreenon", false))
 			keepAwake(false);
+		if (tts != null)
+			tts.shutdown();
 	}
 
 	private void startSession() {
@@ -241,12 +244,18 @@ public class MainActivity extends Activity {
 	public void stopPlayers(final PlayState which) {
 		try {
 			if (which == PlayState.BELL || which == null) {
-				if (bellPlayer != null)
+				if (bellPlayer != null) {
 					bellPlayer.stop();
+					bellPlayer.release();
+					bellPlayer = null;
+				}
 			}
 			if (which == PlayState.SILENCE || which == null) {
-				if (silencePlayer != null)
+				if (silencePlayer != null) {
 					silencePlayer.stop();
+					silencePlayer.release();
+					silencePlayer = null;
+				}
 			}
 		} catch (IllegalStateException e) {
 		}
@@ -382,7 +391,7 @@ public class MainActivity extends Activity {
 
 	public int getCurrPosition() {
 		if (currPlayState == PlayState.BELL) return -1;
-		int pos = 0;
+		int pos = -1;
 		try {
 			if (silencePlayer != null) {
 				final int base = currRepeat == 0 ? 0 : (currSilence - 1) * 60 * 1000;
@@ -396,7 +405,7 @@ public class MainActivity extends Activity {
 
 	public int getDuration() {
 		if (currPlayState == PlayState.BELL) return -1;
-		int dur = 0;
+		int dur = -1;
 		try {
 			if (silencePlayer != null) {
 				final int base = currRepeat == 0 ? 1 : totalSilenceCount; 
@@ -478,12 +487,13 @@ public class MainActivity extends Activity {
 			bellPlayer.release();
 		if (silencePlayer != null)
 			silencePlayer.release();
+		if (tts != null)
+			tts.shutdown();
 		super.onDestroy();
 	}
 	
 	// inner classes
 	public class TtsPlayer implements TextToSpeech.OnInitListener {
-		private TextToSpeech tts;
 		private final String phrase;
 		public TtsPlayer(final String text) {
 			phrase = text;
@@ -491,15 +501,20 @@ public class MainActivity extends Activity {
 		public void speak() {
 			stopPlayers(PlayState.BELL);
 			tts = new TextToSpeech(MainActivity.this, this);
-			tts.setLanguage(java.util.Locale.US);
 		}
 		@Override
 		public void onInit(final int status) {
 			if (status == TextToSpeech.SUCCESS) {
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+				final java.util.Locale lang;
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+					lang = tts.getDefaultVoice().getLocale();
+					tts.setLanguage(lang);
 					tts.speak(phrase, TextToSpeech.QUEUE_FLUSH, null, phrase);
-				else
+				} else {
+					lang = tts.getDefaultLanguage();
+					tts.setLanguage(lang);
 					tts.speak(phrase, TextToSpeech.QUEUE_FLUSH, null);
+				}
 			} else if (status == TextToSpeech.ERROR) {
 				tts.shutdown();
 			}
