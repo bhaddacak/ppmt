@@ -32,7 +32,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.media.MediaPlayer;
-import android.media.AudioManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ComponentName;
@@ -196,6 +195,7 @@ public class MainActivity extends Activity {
 		timerFragment.updateTimerDisplay(true);
 		timerFragment.updateStartButton();
 		runningState = false;
+		currPlayState = PlayState.BELL;
 		stopPlayers();
 		if (prefs.getBoolean("pref_keepscreenon", false))
 			keepAwake(false);
@@ -246,14 +246,12 @@ public class MainActivity extends Activity {
 			if (which == PlayState.BELL || which == null) {
 				if (bellPlayer != null) {
 					bellPlayer.stop();
-					bellPlayer.release();
 					bellPlayer = null;
 				}
 			}
 			if (which == PlayState.SILENCE || which == null) {
 				if (silencePlayer != null) {
 					silencePlayer.stop();
-					silencePlayer.release();
 					silencePlayer = null;
 				}
 			}
@@ -353,7 +351,6 @@ public class MainActivity extends Activity {
 	private void prepare() {
 		currPlayState = PlayState.SILENCE;
 		silencePlayer = MediaPlayer.create(this, R.raw.prepare);
-		silencePlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		silencePlayer.setOnCompletionListener(bellCompleteListener);
 		silencePlayer.start();
 	}
@@ -369,7 +366,6 @@ public class MainActivity extends Activity {
 	private void silence() {
 		currPlayState = PlayState.SILENCE;
 		silencePlayer = MediaPlayer.create(this, R.raw.silence);
-		silencePlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		if (currSilence < totalSilenceCount)
 			silencePlayer.setOnCompletionListener(silenceCompleteListener);
 		else
@@ -419,7 +415,6 @@ public class MainActivity extends Activity {
 
 	private void ring(final String bell) {
 		bellPlayer = MediaPlayer.create(this, getBell(bell));
-		bellPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		bellPlayer.start();
 	}
 
@@ -452,7 +447,6 @@ public class MainActivity extends Activity {
 	public void chime(final View view) {
 		if (liveFragment == null) return;
 		bellPlayer = MediaPlayer.create(this, bellMap.get(((LiveFragment)liveFragment).getCurrBell()));
-		bellPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		bellPlayer.start();
 	}
 
@@ -560,13 +554,11 @@ public class MainActivity extends Activity {
 		};
 		private void playClick() {
 			bellPlayer = MediaPlayer.create(MainActivity.this, R.raw.click);
-			bellPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 			bellPlayer.setOnCompletionListener(clickCompleteListener);
 			bellPlayer.start();
 		}
 		private void playBell() {
 			bellPlayer = MediaPlayer.create(MainActivity.this, bellId);
-			bellPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 			bellPlayer.start();
 		}
 		private void playTTS() {
