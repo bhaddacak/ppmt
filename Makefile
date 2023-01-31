@@ -2,7 +2,7 @@
 # adapted from https://gitlab.com/Matrixcoffee/hello-world-debian-android
 # from the instruction at https://www.hanshq.net/command-line-android.html
 
-SDKPATH=/usr/lib/android-sdk/build-tools/debian
+SDKPATH=/opt/android-sdk/build-tools/29.0.3
 PLATFORM=/usr/lib/android-sdk/platforms/android-23/android.jar
 MINSDK=19
 SRCPATH=src

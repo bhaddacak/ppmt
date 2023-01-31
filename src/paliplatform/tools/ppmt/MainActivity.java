@@ -20,7 +20,6 @@ import java.util.HashMap;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.os.CountDownTimer;
 import android.app.Activity;
 import android.app.ActionBar;
@@ -58,7 +57,6 @@ public class MainActivity extends Activity {
 	private MediaPlayer bellPlayer;
 	private MediaPlayer silencePlayer;
 	private CountDownTimer silenceTimer;
-	private Looper silenceLooper;
 	private TextToSpeech tts;
 	private boolean settingsEnabled;
 	private int interval;
@@ -209,8 +207,6 @@ public class MainActivity extends Activity {
 		stopPlayers();
 		if (silenceTimer != null)
 			silenceTimer.cancel();
-		if (silenceLooper != null)
-			silenceLooper.quit();
 		if (prefs.getBoolean("pref_keepscreenon", false))
 			keepAwake(false);
 		if (tts != null)
@@ -229,7 +225,7 @@ public class MainActivity extends Activity {
 		currRepeat = preparation.equals("no") ? 1 : 0;
 		totalSilenceCount = interval; // we have 1-min silence piece
 		runningState = true;
-		startPlayerTask();
+		silenceAndRing();
 	}
 
 	public void pauseSession() {
@@ -252,8 +248,6 @@ public class MainActivity extends Activity {
 
 	public void stopSession() {
 		runningState = false;
-		if (silenceLooper != null)
-			silenceLooper.quit();
 	}
 
 	public void stopPlayers() {
@@ -278,20 +272,6 @@ public class MainActivity extends Activity {
 		}
 	}
 
-	private void startPlayerTask() {
-		final Thread thread = new Thread(null, doThreadProcessing, "player");
-		thread.start();
-	}
-
-	private Runnable doThreadProcessing = new Runnable() {
-		@Override
-		public void run() {
-			silenceLooper = Looper.myLooper();
-			silenceLooper.prepare();
-			silenceAndRing();
-		}
-	};
-
 	private void silenceAndRing() {
 		if (!runningState) return;
 		if (currRepeat == 0) {
@@ -306,7 +286,6 @@ public class MainActivity extends Activity {
 				stopSession();
 			}
 		}
-		silenceLooper.loop();
 	}
 
 	private MediaPlayer.OnCompletionListener bellCompleteListener = new MediaPlayer.OnCompletionListener() {
@@ -472,9 +451,11 @@ public class MainActivity extends Activity {
 		final WindowManager.LayoutParams winParams = win.getAttributes();
 		if (val) {
 			win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+			win.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			winParams.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_OFF;
 		} else {
 			win.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+			win.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			winParams.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
 		}
 		win.setAttributes(winParams);
