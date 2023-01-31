@@ -435,9 +435,11 @@ public class MainActivity extends Activity {
 		final WindowManager.LayoutParams winParams = win.getAttributes();
 		if (val) {
 			win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+			win.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			winParams.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_OFF;
 		} else {
 			win.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+			win.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			winParams.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
 		}
 		win.setAttributes(winParams);
