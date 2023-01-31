@@ -39,7 +39,6 @@ import android.preference.PreferenceManager;
 public class TimerFragment extends Fragment {
 	enum State { READY, COUNTDOWN, PAUSED }
 	private static final int GUI_UPDATE_INTERVAL = 500;
-	private static final int PREPARE_MILLIS = 10000;
 	private MainActivity mainAct;
 	private SharedPreferences prefs;
 	private CountDownTimer refreshTimer;
@@ -50,7 +49,7 @@ public class TimerFragment extends Fragment {
 	private ProgressBar timerProgress;
 	private int interval;
 	private int repeat;
-	private boolean hasPreparation;
+	private String preparation;
 	private int preMillis;
 	private State currState = State.READY;
 	private long totalMillis = 0;
@@ -76,8 +75,8 @@ public class TimerFragment extends Fragment {
 		prefs = mainAct.getPrefs();
 		interval = Integer.parseInt(prefs.getString("pref_interval", "15"));
 		repeat = Integer.parseInt(prefs.getString("pref_repeat", "2"));
-		hasPreparation = prefs.getBoolean("pref_preparation", true);
-		preMillis = hasPreparation ? PREPARE_MILLIS : 0;
+		preparation = prefs.getString("pref_preparation", "clicks");
+		preMillis = preparation.equals("no") ? 0 : preparation.equals("gong") ? 20000 : 10000;
 		if (totalMillis == 0 || !mainAct.isRunning()) initMillis();
 		setupResetButton();
 		updateStartButton();
@@ -99,7 +98,7 @@ public class TimerFragment extends Fragment {
 	}
 
 	public void initMillis() {
-		totalMillis = preMillis + interval * 60 * 1000 * repeat;
+		totalMillis = preMillis + interval * MainActivity.ONE_MINUTE_MILLIS * repeat;
 		remMillis = totalMillis;
 	}
 
@@ -167,17 +166,17 @@ public class TimerFragment extends Fragment {
 		if (timerDisplay == null) return;
 		if (!mainAct.isRunning() || isInit) {
 			if (currState == State.READY) {
-				if (hasPreparation)
-					lastMillis =  preMillis;
+				if (preparation.equals("no"))
+					lastMillis = interval * MainActivity.ONE_MINUTE_MILLIS;
 				else
-					lastMillis = interval * 60 * 1000;
+					lastMillis =  preMillis;
 			}
 		} else {
 			if (mainAct.getCurrPlayState() == MainActivity.PlayState.BELL) {
 				if (mainAct.getCurrRepeat() == 0)
 					lastMillis = preMillis;
 				else
-					lastMillis = interval * 60 * 1000;
+					lastMillis = interval * MainActivity.ONE_MINUTE_MILLIS;
 			} else {
 				int duration = mainAct.getDuration();
 				int position = mainAct.getCurrPosition();
@@ -195,7 +194,7 @@ public class TimerFragment extends Fragment {
 		if (repeatDisplay == null) return;
 		final int curr;
 		if (!mainAct.isRunning()) {
-			curr = hasPreparation ? 0 : 1;
+			curr = preparation.equals("no") ? 1 : 0;
 		} else {
 			curr = mainAct.getCurrRepeat();
 		}

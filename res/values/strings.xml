@@ -21,8 +21,7 @@
 	<string name="click_title">Leading click</string>
 	<string name="click_dialog_title">Leading click to use:</string>
 	<string name="preparation_title">Preparation</string>
-	<string name="preparation_summ_yes">Use 10-second preparation</string>
-	<string name="preparation_summ_no">No preparation</string>
+	<string name="preparation_dialog_title">Preparation to use:</string>
 	<string name="keepscreenon_title">Keep screen on</string>
 	<string name="keepscreenon_summ_yes">Stay awake during the session</string>
 	<string name="keepscreenon_summ_no">Use the system sleep setting</string>
@@ -115,8 +114,21 @@
 		<item>6</item>
 	</string-array>
 
+	<string-array name="preparation_entries">
+		<item>No preparation</item>
+		<item>10 seconds with clicks</item>
+		<item>10 seconds with a melody</item>
+		<item>20 seconds with a gong</item>
+	</string-array>
+	<string-array name="preparation_values">
+		<item>no</item>
+		<item>clicks</item>
+		<item>melody</item>
+		<item>gong</item>
+	</string-array>
+
 	<string name="about_text">
-		<b>Pāli Platform Meditation Timer</b> 1.1.1\n
+		<b>Pāli Platform Meditation Timer</b> 1.1.2\n
 		<small>(Foreground Player version)</small>\n
 		<small>Licensed under the Apache License, Version 2.0</small>\n
 		\n
@@ -133,7 +145,7 @@
 		• Select the repeat up to 12 times\n
 		• Select the alarm either bells or TTS\n
 		• Select if leading clicks are also added\n
-		• Select if 10-second preparation is used\n
+		• Select if a preparation is used\n
 		• Select if the device is kept awake\n
 		• Go to Timer and press START\n
 		• The session can be paused and resumed\n
@@ -143,7 +155,7 @@
 		• Use Live mode to arbitrarily ring the bell\n
 		</small>
 		\n
-		Copyright © 2023 J. R. Bhaddacak \n
+		Copyright © 2023 J.R. Bhaddacak \n
 		<small>See further at <b><i>paliplatform.blogspot.com</i></b></small>
 		\n
 	</string>

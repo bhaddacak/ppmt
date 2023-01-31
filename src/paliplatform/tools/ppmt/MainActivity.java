@@ -20,6 +20,8 @@ import java.util.HashMap;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
+import android.os.CountDownTimer;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
@@ -46,6 +48,7 @@ import android.speech.tts.TextToSpeech;
 public class MainActivity extends Activity {
 	enum PlayState { SILENCE, BELL }
 	enum AlarmMode { BELL, TTS }
+	public static final int ONE_MINUTE_MILLIS = 60000;
 	private SharedPreferences prefs;
 	private final TimerFragment timerFragment;
 	private final SettingsFragment settingsFragment;
@@ -54,13 +57,16 @@ public class MainActivity extends Activity {
 	private final HashMap<Integer, Integer> bellMap;
 	private MediaPlayer bellPlayer;
 	private MediaPlayer silencePlayer;
+	private CountDownTimer silenceTimer;
+	private Looper silenceLooper;
 	private TextToSpeech tts;
 	private boolean settingsEnabled;
 	private int interval;
 	private int repeat;
 	private String sound;
 	private int clickOption;
-	private boolean hasPreparation;
+	private String preparation;
+	private int prepareMillis;
 	private PlayState currPlayState;
 	private boolean runningState;
 	private int currRepeat;
@@ -94,6 +100,10 @@ public class MainActivity extends Activity {
 		// init settings
 		PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		preparation = prefs.getString("pref_preparation", "clicks");
+		prepareMillis = preparation.equals("gong") ? 20000
+						: preparation.equals("clicks") || preparation.equals("melody") ? 10000
+						: 0;
 	}
 
     @Override
@@ -197,6 +207,10 @@ public class MainActivity extends Activity {
 		runningState = false;
 		currPlayState = PlayState.BELL;
 		stopPlayers();
+		if (silenceTimer != null)
+			silenceTimer.cancel();
+		if (silenceLooper != null)
+			silenceLooper.quit();
 		if (prefs.getBoolean("pref_keepscreenon", false))
 			keepAwake(false);
 		if (tts != null)
@@ -208,8 +222,11 @@ public class MainActivity extends Activity {
 		repeat = Integer.parseInt(prefs.getString("pref_repeat", "2"));
 		sound = prefs.getString("pref_sound", "small");
 		clickOption = Integer.parseInt(prefs.getString("pref_click", "1"));
-		hasPreparation = prefs.getBoolean("pref_preparation", true);
-		currRepeat = hasPreparation ? 0 : 1;
+		preparation = prefs.getString("pref_preparation", "clicks");
+		prepareMillis = preparation.equals("gong") ? 20000
+						: preparation.equals("clicks") || preparation.equals("melody") ? 10000
+						: 0;
+		currRepeat = preparation.equals("no") ? 1 : 0;
 		totalSilenceCount = interval; // we have 1-min silence piece
 		runningState = true;
 		startPlayerTask();
@@ -235,6 +252,8 @@ public class MainActivity extends Activity {
 
 	public void stopSession() {
 		runningState = false;
+		if (silenceLooper != null)
+			silenceLooper.quit();
 	}
 
 	public void stopPlayers() {
@@ -267,6 +286,8 @@ public class MainActivity extends Activity {
 	private Runnable doThreadProcessing = new Runnable() {
 		@Override
 		public void run() {
+			silenceLooper = Looper.myLooper();
+			silenceLooper.prepare();
 			silenceAndRing();
 		}
 	};
@@ -281,96 +302,111 @@ public class MainActivity extends Activity {
 				currSilence = 1;
 				silence();
 			} else {
-				currRepeat = hasPreparation ? 0 : 1;
+				currRepeat = preparation.equals("no") ? 1 : 0;
 				stopSession();
 			}
 		}
+		silenceLooper.loop();
 	}
 
 	private MediaPlayer.OnCompletionListener bellCompleteListener = new MediaPlayer.OnCompletionListener() {
 		@Override
 		public void onCompletion(final MediaPlayer mp) {
-			currPlayState = PlayState.BELL;
-			if (currRepeat == 0) {
-				if (sound.startsWith("tts")) {
-					final String phrase = MainActivity.this.getResources().getString(R.string.tts_prepare);
-					new TtsPlayer(phrase).speak();
-				} else {
-					ring(sound);
-				}
-			} else {
-				switch (clickOption) {
-					case 0:
-						if (sound.startsWith("tts")) {
-							final int num = currRepeat * interval;
-							final String lastEnding = currRepeat == repeat ? MainActivity.this.getResources().getString(R.string.tts_last) : "";
-							final String phrase = num + MainActivity.this.getResources().getString(R.string.tts_loop) + lastEnding;
-							new TtsPlayer(phrase).speak();
-						} else {
-							ring(sound);
-						}
-						break;
-					case 1:
-						if (sound.startsWith("tts")) {
-							final int num = currRepeat * interval;
-							final String lastEnding = currRepeat == repeat ? MainActivity.this.getResources().getString(R.string.tts_last) : "";
-							final String phrase = num + MainActivity.this.getResources().getString(R.string.tts_loop) + lastEnding;
-							if (currRepeat == repeat) {
-								new LeadingClickPlayer(2, phrase).play();
-							} else {
-								new TtsPlayer(phrase).speak();
-							}
-						} else {
-							if (currRepeat == repeat)
-								new LeadingClickPlayer(2, getBell(sound)).play();
-							else
-								ring(sound);
-						}
-						break;
-					case 2:
-					case 3:
-					case 4:
-					case 5:
-					case 6:
-						final int clickCount = currRepeat % clickOption;
-						final int num = currRepeat * interval;
-						final String lastEnding = currRepeat == repeat ? MainActivity.this.getResources().getString(R.string.tts_last) : "";
-						final String phrase = num + MainActivity.this.getResources().getString(R.string.tts_loop) + lastEnding;
-						if (sound.startsWith("tts"))
-							new LeadingClickPlayer((clickCount==0?clickOption:clickCount), phrase).play();
-						else
-							new LeadingClickPlayer((clickCount==0?clickOption:clickCount), getBell(sound)).play();
-						break;
-				}
-			}
-			currRepeat++;
-			silenceAndRing();
+			alarm();
 		}
 	};
 
+	private void alarm() {
+		currPlayState = PlayState.BELL;
+		if (currRepeat == 0) {
+			if (sound.startsWith("tts")) {
+				final String phrase = MainActivity.this.getResources().getString(R.string.tts_prepare);
+				new TtsPlayer(phrase).speak();
+			}
+		} else {
+			switch (clickOption) {
+				case 0:
+					if (sound.startsWith("tts")) {
+						final int num = currRepeat * interval;
+						final String lastEnding = currRepeat == repeat ? MainActivity.this.getResources().getString(R.string.tts_last) : "";
+						final String phrase = num + MainActivity.this.getResources().getString(R.string.tts_loop) + lastEnding;
+						new TtsPlayer(phrase).speak();
+					} else {
+						ring(sound);
+					}
+					break;
+				case 1:
+					if (sound.startsWith("tts")) {
+						final int num = currRepeat * interval;
+						final String lastEnding = currRepeat == repeat ? MainActivity.this.getResources().getString(R.string.tts_last) : "";
+						final String phrase = num + MainActivity.this.getResources().getString(R.string.tts_loop) + lastEnding;
+						if (currRepeat == repeat) {
+							new LeadingClickPlayer(2, phrase).play();
+						} else {
+							new TtsPlayer(phrase).speak();
+						}
+					} else {
+						if (currRepeat == repeat)
+							new LeadingClickPlayer(2, getBell(sound)).play();
+						else
+							ring(sound);
+					}
+					break;
+				case 2:
+				case 3:
+				case 4:
+				case 5:
+				case 6:
+					final int clickCount = currRepeat % clickOption;
+					final int num = currRepeat * interval;
+					final String lastEnding = currRepeat == repeat ? MainActivity.this.getResources().getString(R.string.tts_last) : "";
+					final String phrase = num + MainActivity.this.getResources().getString(R.string.tts_loop) + lastEnding;
+					if (sound.startsWith("tts"))
+						new LeadingClickPlayer((clickCount==0?clickOption:clickCount), phrase).play();
+					else
+						new LeadingClickPlayer((clickCount==0?clickOption:clickCount), getBell(sound)).play();
+					break;
+			}
+		}
+		currRepeat++;
+		silenceAndRing();
+	}
+
 	private void prepare() {
 		currPlayState = PlayState.SILENCE;
-		silencePlayer = MediaPlayer.create(this, R.raw.prepare);
+		final int sndId = preparation.equals("gong") ? R.raw.prepare_gong
+							: preparation.equals("melody") ? R.raw.prepare_melody
+							: R.raw.prepare_clicks;
+		silencePlayer = MediaPlayer.create(this, sndId);
 		silencePlayer.setOnCompletionListener(bellCompleteListener);
 		silencePlayer.start();
 	}
 
-	private MediaPlayer.OnCompletionListener silenceCompleteListener = new MediaPlayer.OnCompletionListener() {
-		@Override
-		public void onCompletion(final MediaPlayer mp) {
-			currSilence++;
-			silence();
-		}
-	};
-
 	private void silence() {
 		currPlayState = PlayState.SILENCE;
-		silencePlayer = MediaPlayer.create(this, R.raw.silence);
-		if (currSilence < totalSilenceCount)
-			silencePlayer.setOnCompletionListener(silenceCompleteListener);
-		else
-			silencePlayer.setOnCompletionListener(bellCompleteListener);
+		silencePlayer = MediaPlayer.create(this, R.raw.silence_melody);
 		silencePlayer.start();
+		startSilenceTimer();
+	}
+
+	private void startSilenceTimer() {
+		silenceTimer = new CountDownTimer(ONE_MINUTE_MILLIS, 1000) {
+			@Override
+			public void onTick(final long millisUntilFinished) {
+			}
+			@Override
+			public void onFinish() {
+				silenceTimer.cancel();
+				stopPlayers(PlayState.SILENCE);
+				if (currSilence < totalSilenceCount) {
+					currSilence++;
+					silence();
+				} else {
+					alarm();
+				}
+			}
+		};
+		silenceTimer.start();
 	}
 
 	public int getCurrRepeat() {
@@ -390,7 +426,7 @@ public class MainActivity extends Activity {
 		int pos = -1;
 		try {
 			if (silencePlayer != null) {
-				final int base = currRepeat == 0 ? 0 : (currSilence - 1) * 60 * 1000;
+				final int base = currRepeat == 0 ? 0 : (currSilence - 1) * ONE_MINUTE_MILLIS;
 				pos = base + silencePlayer.getCurrentPosition();
 			}
 		} catch (IllegalStateException e) {
@@ -401,13 +437,14 @@ public class MainActivity extends Activity {
 
 	public int getDuration() {
 		if (currPlayState == PlayState.BELL) return -1;
-		int dur = -1;
-		try {
-			if (silencePlayer != null) {
-				final int base = currRepeat == 0 ? 1 : totalSilenceCount; 
-				dur = base * silencePlayer.getDuration();
+		final int dur;
+		if (silencePlayer != null) {
+			if (currRepeat == 0) {
+				dur = prepareMillis;
+			} else {
+				dur = totalSilenceCount * ONE_MINUTE_MILLIS;
 			}
-		} catch (IllegalStateException e) {
+		} else {
 			dur = -1;
 		}
 		return dur;
