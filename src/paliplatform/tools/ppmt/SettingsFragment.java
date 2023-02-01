@@ -66,10 +66,11 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 			final int ind = clickValues.indexOf(click);
 			pref.setSummary(clickEntries[ind]);
 		} else if ("pref_preparation".equals(key)) {
-			final String summPrepare = sharedPreferences.getBoolean(key, true)
-								? getResources().getString(R.string.preparation_summ_yes)
-								: getResources().getString(R.string.preparation_summ_no);
-			pref.setSummary(summPrepare);
+			final String[] prepareEntries = getResources().getStringArray(R.array.preparation_entries);
+			final List<String> prepareValues = Arrays.asList(getResources().getStringArray(R.array.preparation_values));
+			final String prepare = sharedPreferences.getString(key, "");
+			final int ind = prepareValues.indexOf(prepare);
+			pref.setSummary(prepareEntries[ind]);
 		} else if ("pref_keepscreenon".equals(key)) {
 			final String summKeep = sharedPreferences.getBoolean(key, true)
 								? getResources().getString(R.string.keepscreenon_summ_yes)

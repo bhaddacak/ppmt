@@ -28,10 +28,13 @@
 		android:entries="@array/click_entries"
 		android:entryValues="@array/click_values"
 		android:defaultValue="1" />
-	<CheckBoxPreference
+	<ListPreference
 		android:key="pref_preparation"
 		android:title="@string/preparation_title"
-		android:defaultValue="true" />
+		android:dialogTitle="@string/preparation_dialog_title"
+		android:entries="@array/preparation_entries"
+		android:entryValues="@array/preparation_values"
+		android:defaultValue="clicks" />
 	<CheckBoxPreference
 		android:key="pref_keepscreenon"
 		android:title="@string/keepscreenon_title"

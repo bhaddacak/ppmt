@@ -39,9 +39,9 @@ import android.preference.PreferenceManager;
 public class TimerFragment extends Fragment {
 	enum State { READY, COUNTDOWN, PAUSED }
 	private static final int GUI_UPDATE_INTERVAL = 500;
-	private static final int PREPARE_MILLIS = 10000;
 	private MainActivity mainAct;
 	private SharedPreferences prefs;
+	private PlayerService playerService;
 	private CountDownTimer refreshTimer;
 	private TextView timerDisplay;
 	private TextView repeatDisplay;
@@ -50,7 +50,7 @@ public class TimerFragment extends Fragment {
 	private ProgressBar timerProgress;
 	private int interval;
 	private int repeat;
-	private boolean hasPreparation;
+	private String preparation;
 	private int preMillis;
 	private State currState = State.READY;
 	private long totalMillis = 0;
@@ -76,9 +76,10 @@ public class TimerFragment extends Fragment {
 		prefs = mainAct.getPrefs();
 		interval = Integer.parseInt(prefs.getString("pref_interval", "15"));
 		repeat = Integer.parseInt(prefs.getString("pref_repeat", "2"));
-		hasPreparation = prefs.getBoolean("pref_preparation", true);
-		preMillis = hasPreparation ? PREPARE_MILLIS : 0;
-		if (totalMillis == 0 || !mainAct.isRunning()) initMillis();
+		preparation = prefs.getString("pref_preparation", "clicks");
+		preMillis = preparation.equals("no") ? 3000 : preparation.equals("gong") ? 20000 : 10000;
+		if (playerService == null || !playerService.isRunning() || totalMillis == 0)
+			initMillis();
 		setupResetButton();
 		updateStartButton();
 		updateTimerDisplay();
@@ -99,7 +100,7 @@ public class TimerFragment extends Fragment {
 	}
 
 	public void initMillis() {
-		totalMillis = preMillis + interval * 60 * 1000 * repeat;
+		totalMillis = preMillis + interval * PlayerService.ONE_MINUTE_MILLIS * repeat;
 		remMillis = totalMillis;
 	}
 
@@ -109,10 +110,11 @@ public class TimerFragment extends Fragment {
 	}
 
 	public void resumeRefreshTimer() {
+		playerService = mainAct.getPlayerService();
 		refreshTimer = new CountDownTimer(remMillis, GUI_UPDATE_INTERVAL) {
 			@Override
 			public void onTick(final long millisUntilFinished) {
-				if (mainAct.isRunning()) {
+				if (playerService.isRunning()) {
 					remMillis = millisUntilFinished;
 					updateTimerDisplay();
 				} else {
@@ -165,22 +167,19 @@ public class TimerFragment extends Fragment {
 	public void updateTimerDisplay(final boolean isInit) {
 		if (!isShowing) return;
 		if (timerDisplay == null) return;
-		if (!mainAct.isRunning() || isInit) {
+		if (playerService == null || !playerService.isRunning() || isInit) {
 			if (currState == State.READY) {
-				if (hasPreparation)
-					lastMillis =  preMillis;
-				else
-					lastMillis = interval * 60 * 1000;
+				lastMillis =  preMillis;
 			}
 		} else {
-			if (mainAct.getCurrPlayState() == MainActivity.PlayState.BELL) {
-				if (mainAct.getCurrRepeat() == 0)
+			if (playerService.getCurrPlayState() == PlayerService.PlayState.BELL) {
+				if (playerService.getCurrRepeat() == 0)
 					lastMillis = preMillis;
 				else
-					lastMillis = interval * 60 * 1000;
+					lastMillis = interval * PlayerService.ONE_MINUTE_MILLIS;
 			} else {
-				int duration = mainAct.getDuration();
-				int position = mainAct.getCurrPosition();
+				int duration = playerService.getDuration();
+				int position = playerService.getCurrPosition();
 				if (duration > 0 && position >= 0)
 					lastMillis = duration - position;
 			}
@@ -194,10 +193,10 @@ public class TimerFragment extends Fragment {
 	private void updateRepeatDisplay() {
 		if (repeatDisplay == null) return;
 		final int curr;
-		if (!mainAct.isRunning()) {
-			curr = hasPreparation ? 0 : 1;
+		if (playerService == null || !playerService.isRunning()) {
+			curr = 0;
 		} else {
-			curr = mainAct.getCurrRepeat();
+			curr = playerService.getCurrRepeat();
 		}
 		repeatDisplay.setText(curr + "/" + repeat);
 	}
@@ -256,6 +255,7 @@ public class TimerFragment extends Fragment {
 				prefs.edit().clear().commit();
 				PreferenceManager.setDefaultValues(mainAct.getApplicationContext(), R.xml.settings, false);
 				mainAct.resetTimer();
+				onResume();
 				return true;
 			}
 		});
