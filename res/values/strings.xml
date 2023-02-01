@@ -34,6 +34,8 @@
 	<string name="tts_loop">Minutes passed.</string>
 	<string name="tts_last">The session ended.</string>
 
+	<string name="noti_message">Meditation timer is running</string>
+
 	<string-array name="interval_times_entries">
 		<item>5 min.</item>
 		<item>10 min.</item>
@@ -115,7 +117,7 @@
 	</string-array>
 
 	<string-array name="preparation_entries">
-		<item>No preparation</item>
+		<item>3 seconds</item>
 		<item>10 seconds with clicks</item>
 		<item>10 seconds with a melody</item>
 		<item>20 seconds with a gong</item>
@@ -128,7 +130,7 @@
 	</string-array>
 
 	<string name="about_text">
-		<b>Pāli Platform Meditation Timer</b> 1.1.2\n
+		<b>Pāli Platform Meditation Timer</b> 1.2.0\n
 		<small>(Foreground Player version)</small>\n
 		<small>Licensed under the Apache License, Version 2.0</small>\n
 		\n
@@ -136,7 +138,7 @@
 		<small>• Only core Android library is used, up to API level 19\n
 		• Android 4.4 is the minimum requirement\n
 		• The program should also work in modern Androids\n
-		• If necessary, the app\'s restriction has to be disabled\n
+		• If necessary, the app\'s restriction has to be disabled or running in background has to be allowed\n
 		• If anything fails, please keep the screen on\n
 		\n
 		<b>Simple uses:</b>\n

@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="paliplatform.tools.ppmt"
     android:versionCode="1"
-    android:versionName="1.1" >
+    android:versionName="1.2" >
     <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="23" />
     <application
         android:icon="@mipmap/ic_launcher"
@@ -18,5 +18,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+		<service android:name=".PlayerService" android:exported="false" />
     </application>
 </manifest>

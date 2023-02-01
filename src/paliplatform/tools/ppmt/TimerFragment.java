@@ -41,6 +41,7 @@ public class TimerFragment extends Fragment {
 	private static final int GUI_UPDATE_INTERVAL = 500;
 	private MainActivity mainAct;
 	private SharedPreferences prefs;
+	private PlayerService playerService;
 	private CountDownTimer refreshTimer;
 	private TextView timerDisplay;
 	private TextView repeatDisplay;
@@ -76,8 +77,9 @@ public class TimerFragment extends Fragment {
 		interval = Integer.parseInt(prefs.getString("pref_interval", "15"));
 		repeat = Integer.parseInt(prefs.getString("pref_repeat", "2"));
 		preparation = prefs.getString("pref_preparation", "clicks");
-		preMillis = preparation.equals("no") ? 0 : preparation.equals("gong") ? 20000 : 10000;
-		if (totalMillis == 0 || !mainAct.isRunning()) initMillis();
+		preMillis = preparation.equals("no") ? 3000 : preparation.equals("gong") ? 20000 : 10000;
+		if (playerService == null || !playerService.isRunning() || totalMillis == 0)
+			initMillis();
 		setupResetButton();
 		updateStartButton();
 		updateTimerDisplay();
@@ -98,7 +100,7 @@ public class TimerFragment extends Fragment {
 	}
 
 	public void initMillis() {
-		totalMillis = preMillis + interval * MainActivity.ONE_MINUTE_MILLIS * repeat;
+		totalMillis = preMillis + interval * PlayerService.ONE_MINUTE_MILLIS * repeat;
 		remMillis = totalMillis;
 	}
 
@@ -108,10 +110,11 @@ public class TimerFragment extends Fragment {
 	}
 
 	public void resumeRefreshTimer() {
+		playerService = mainAct.getPlayerService();
 		refreshTimer = new CountDownTimer(remMillis, GUI_UPDATE_INTERVAL) {
 			@Override
 			public void onTick(final long millisUntilFinished) {
-				if (mainAct.isRunning()) {
+				if (playerService.isRunning()) {
 					remMillis = millisUntilFinished;
 					updateTimerDisplay();
 				} else {
@@ -164,22 +167,19 @@ public class TimerFragment extends Fragment {
 	public void updateTimerDisplay(final boolean isInit) {
 		if (!isShowing) return;
 		if (timerDisplay == null) return;
-		if (!mainAct.isRunning() || isInit) {
+		if (playerService == null || !playerService.isRunning() || isInit) {
 			if (currState == State.READY) {
-				if (preparation.equals("no"))
-					lastMillis = interval * MainActivity.ONE_MINUTE_MILLIS;
-				else
-					lastMillis =  preMillis;
+				lastMillis =  preMillis;
 			}
 		} else {
-			if (mainAct.getCurrPlayState() == MainActivity.PlayState.BELL) {
-				if (mainAct.getCurrRepeat() == 0)
+			if (playerService.getCurrPlayState() == PlayerService.PlayState.BELL) {
+				if (playerService.getCurrRepeat() == 0)
 					lastMillis = preMillis;
 				else
-					lastMillis = interval * MainActivity.ONE_MINUTE_MILLIS;
+					lastMillis = interval * PlayerService.ONE_MINUTE_MILLIS;
 			} else {
-				int duration = mainAct.getDuration();
-				int position = mainAct.getCurrPosition();
+				int duration = playerService.getDuration();
+				int position = playerService.getCurrPosition();
 				if (duration > 0 && position >= 0)
 					lastMillis = duration - position;
 			}
@@ -193,10 +193,10 @@ public class TimerFragment extends Fragment {
 	private void updateRepeatDisplay() {
 		if (repeatDisplay == null) return;
 		final int curr;
-		if (!mainAct.isRunning()) {
-			curr = preparation.equals("no") ? 1 : 0;
+		if (playerService == null || !playerService.isRunning()) {
+			curr = 0;
 		} else {
-			curr = mainAct.getCurrRepeat();
+			curr = playerService.getCurrRepeat();
 		}
 		repeatDisplay.setText(curr + "/" + repeat);
 	}
@@ -255,6 +255,7 @@ public class TimerFragment extends Fragment {
 				prefs.edit().clear().commit();
 				PreferenceManager.setDefaultValues(mainAct.getApplicationContext(), R.xml.settings, false);
 				mainAct.resetTimer();
+				onResume();
 				return true;
 			}
 		});
