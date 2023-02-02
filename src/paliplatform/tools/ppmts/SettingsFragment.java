@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package paliplatform.tools.ppmt;
+package paliplatform.tools.ppmts;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,26 +53,24 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 			else
 				summRepeat = repeat + " times";
 			pref.setSummary(summRepeat);
-		} else if ("pref_sound".equals(key)) {
-			final String[] soundEntries = getResources().getStringArray(R.array.sound_entries);
-			final List<String> soundValues = Arrays.asList(getResources().getStringArray(R.array.sound_values));
-			final String sound = sharedPreferences.getString(key, "");
-			final int ind = soundValues.indexOf(sound);
-			pref.setSummary(soundEntries[ind]);
 		} else if ("pref_click".equals(key)) {
 			final String[] clickEntries = getResources().getStringArray(R.array.click_entries);
 			final List<String> clickValues = Arrays.asList(getResources().getStringArray(R.array.click_values));
 			final String click = sharedPreferences.getString(key, "");
 			final int ind = clickValues.indexOf(click);
 			pref.setSummary(clickEntries[ind]);
+		} else if ("pref_ttsmarker".equals(key)) {
+			final String summTTS = sharedPreferences.getBoolean(key, true)
+								? getResources().getString(R.string.ttsmarker_summ_yes)
+								: getResources().getString(R.string.ttsmarker_summ_no);
+			pref.setSummary(summTTS);
 		} else if ("pref_preparation".equals(key)) {
-			final String[] prepareEntries = getResources().getStringArray(R.array.preparation_entries);
-			final List<String> prepareValues = Arrays.asList(getResources().getStringArray(R.array.preparation_values));
-			final String prepare = sharedPreferences.getString(key, "");
-			final int ind = prepareValues.indexOf(prepare);
-			pref.setSummary(prepareEntries[ind]);
+			final String summPrepare = sharedPreferences.getBoolean(key, true)
+								? getResources().getString(R.string.preparation_summ_yes)
+								: getResources().getString(R.string.preparation_summ_no);
+			pref.setSummary(summPrepare);
 		} else if ("pref_keepscreenon".equals(key)) {
-			final String summKeep = sharedPreferences.getBoolean(key, true)
+			final String summKeep = sharedPreferences.getBoolean(key, false)
 								? getResources().getString(R.string.keepscreenon_summ_yes)
 								: getResources().getString(R.string.keepscreenon_summ_no);
 			pref.setSummary(summKeep);
@@ -86,8 +84,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 		final SharedPreferences prefs = ((MainActivity) getActivity()).getPrefs();
 		updateSummary(prefs, "pref_interval");
 		updateSummary(prefs, "pref_repeat");
-		updateSummary(prefs, "pref_sound");
 		updateSummary(prefs, "pref_click");
+		updateSummary(prefs, "pref_ttsmarker");
 		updateSummary(prefs, "pref_preparation");
 		updateSummary(prefs, "pref_keepscreenon");
 	}

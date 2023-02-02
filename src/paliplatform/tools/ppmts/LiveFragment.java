@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package paliplatform.tools.ppmt;
+package paliplatform.tools.ppmts;
 
 import android.app.Activity;
 import android.app.Fragment;

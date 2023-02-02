@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package paliplatform.tools.ppmt;
+package paliplatform.tools.ppmts;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -50,7 +50,7 @@ public class TimerFragment extends Fragment {
 	private ProgressBar timerProgress;
 	private int interval;
 	private int repeat;
-	private String preparation;
+	private boolean hasPreparation;
 	private int preMillis;
 	private State currState = State.READY;
 	private long totalMillis = 0;
@@ -76,8 +76,8 @@ public class TimerFragment extends Fragment {
 		prefs = mainAct.getPrefs();
 		interval = Integer.parseInt(prefs.getString("pref_interval", "15"));
 		repeat = Integer.parseInt(prefs.getString("pref_repeat", "2"));
-		preparation = prefs.getString("pref_preparation", "clicks");
-		preMillis = preparation.equals("no") ? 3000 : preparation.equals("gong") ? 20000 : 10000;
+		hasPreparation = prefs.getBoolean("pref_preparation", true);
+		preMillis = hasPreparation ? 20000 : 0;
 		if (playerService == null || !playerService.isRunning() || totalMillis == 0)
 			initMillis();
 		setupResetButton();
@@ -169,25 +169,20 @@ public class TimerFragment extends Fragment {
 		if (timerDisplay == null) return;
 		if (playerService == null || !playerService.isRunning() || isInit) {
 			if (currState == State.READY) {
-				lastMillis =  preMillis;
+				lastMillis = hasPreparation ? preMillis : interval * PlayerService.ONE_MINUTE_MILLIS;
 			}
 		} else {
-			if (playerService.getCurrPlayState() == PlayerService.PlayState.BELL) {
-				if (playerService.getCurrRepeat() == 0)
-					lastMillis = preMillis;
-				else
-					lastMillis = interval * PlayerService.ONE_MINUTE_MILLIS;
-			} else {
-				int duration = playerService.getDuration();
-				int position = playerService.getCurrPosition();
-				if (duration > 0 && position >= 0)
-					lastMillis = duration - position;
-			}
+			int duration = playerService.getDuration();
+			int position = playerService.getCurrPosition();
+			if (duration > 0 && position >= 0)
+				lastMillis = duration - position;
+			else
+				lastMillis = hasPreparation ? preMillis : interval * PlayerService.ONE_MINUTE_MILLIS;
 		}
 		timerDisplay.setText(formatMillis(lastMillis, false));
 		updateRepeatDisplay();
 		updateProgressBar();
-		updateElapsedTime();
+		updateElapsingTime();
 	}
 
 	private void updateRepeatDisplay() {
@@ -207,7 +202,7 @@ public class TimerFragment extends Fragment {
 		timerProgress.setProgress((int)progress);
 	}
 
-	private void updateElapsedTime() {
+	private void updateElapsingTime() {
 		if (elapseDisplay == null || totalDisplay == null) return;
 		final long elapsed = totalMillis - remMillis;
 		elapseDisplay.setText(formatMillis(elapsed, true));

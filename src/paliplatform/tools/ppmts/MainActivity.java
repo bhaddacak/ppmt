@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package paliplatform.tools.ppmt;
+package paliplatform.tools.ppmts;
 
 import java.util.HashMap;
 
@@ -44,7 +44,6 @@ import android.preference.PreferenceManager;
 //~ 		Toast.makeText(MainActivity.this, ""+currPosition, Toast.LENGTH_SHORT).show();
 
 public class MainActivity extends Activity {
-	public static final int ONE_MINUTE_MILLIS = 60000;
 	private SharedPreferences prefs;
 	private Intent playerServiceIntent;
 	private ComponentName playerServiceCompName;
@@ -176,13 +175,11 @@ public class MainActivity extends Activity {
 				keepAwake(true);
 		} else if (state == TimerFragment.State.COUNTDOWN) {
 			if (playerService == null) return;
-			if (playerService.getCurrPlayState() == PlayerService.PlayState.BELL) return;
 			playerService.pauseSession();
 			timerFragment.setState(TimerFragment.State.PAUSED);
 			timerFragment.stopRefreshTimer();
 		} else if (state == TimerFragment.State.PAUSED) {
 			if (playerService == null) return;
-			if (playerService.getCurrPlayState() == PlayerService.PlayState.BELL) return;
 			playerService.resumeSession();
 			timerFragment.setState(TimerFragment.State.COUNTDOWN);
 			timerFragment.resumeRefreshTimer();
@@ -198,6 +195,7 @@ public class MainActivity extends Activity {
 		timerFragment.updateTimerDisplay(true);
 		timerFragment.updateStartButton();
 		unbindPlayerService();
+		stopLiveBellPlayer();
 		if (prefs.getBoolean("pref_keepscreenon", false))
 			keepAwake(false);
 	}
@@ -239,6 +237,16 @@ public class MainActivity extends Activity {
 		if (liveFragment == null) return;
 		liveBellPlayer = MediaPlayer.create(this, liveBellMap.get(((LiveFragment)liveFragment).getCurrBell()));
 		liveBellPlayer.start();
+	}
+
+	private void stopLiveBellPlayer() {
+		try {
+			if (liveBellPlayer != null) {
+				liveBellPlayer.stop();
+				liveBellPlayer = null;
+			}
+		} catch (IllegalStateException e) {
+		}
 	}
 
 	public void onBellSizeClicked(final View view) {

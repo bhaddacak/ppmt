@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">PPMT</string>
-	<string name="app_subtitle">Pāli Platform Meditation Timer</string>
+	<string name="app_name">PPMT Simple</string>
+	<string name="app_subtitle">Pāli Platform Meditation Timer (S)</string>
 	<string name="quit">Quit</string>
 	<string name="reset">Reset</string>
 	<string name="settings">Settings</string>
@@ -16,12 +16,14 @@
 	<string name="interval_dialog_title">Interval time to use:</string>
 	<string name="repeat_title">Repeat</string>
 	<string name="repeat_dialog_title">Number of repeat:</string>
-	<string name="sound_title">Sound</string>
-	<string name="sound_dialog_title">Sound to use:</string>
-	<string name="click_title">Leading click</string>
-	<string name="click_dialog_title">Leading click to use:</string>
+	<string name="click_title">Tailing clicks</string>
+	<string name="click_dialog_title">Tailing clicks to use:</string>
+	<string name="ttsmarker_title">Text-to-speech markers</string>
+	<string name="ttsmarker_summ_yes">Use TTS markers</string>
+	<string name="ttsmarker_summ_no">No marker</string>
 	<string name="preparation_title">Preparation</string>
-	<string name="preparation_dialog_title">Preparation to use:</string>
+	<string name="preparation_summ_yes">Use 20-sec preparation bell</string>
+	<string name="preparation_summ_no">No preparation</string>
 	<string name="keepscreenon_title">Keep screen on</string>
 	<string name="keepscreenon_summ_yes">Stay awake during the session</string>
 	<string name="keepscreenon_summ_no">Use the system sleep setting</string>
@@ -41,18 +43,12 @@
 		<item>10 min.</item>
 		<item>15 min.</item>
 		<item>20 min.</item>
-		<item>25 min.</item>
-		<item>30 min.</item>
-		<item>60 min.</item>
 	</string-array>
 	<string-array name="interval_times_values">
 		<item>5</item>
 		<item>10</item>
 		<item>15</item>
 		<item>20</item>
-		<item>25</item>
-		<item>30</item>
-		<item>60</item>
 	</string-array>
 
 	<string-array name="repeat_times_entries">
@@ -62,12 +58,6 @@
 		<item>4 times</item>
 		<item>5 times</item>
 		<item>6 times</item>
-		<item>7 times</item>
-		<item>8 times</item>
-		<item>9 times</item>
-		<item>10 times</item>
-		<item>11 times</item>
-		<item>12 times</item>
 	</string-array>
 	<string-array name="repeat_times_values">
 		<item>1</item>
@@ -76,30 +66,11 @@
 		<item>4</item>
 		<item>5</item>
 		<item>6</item>
-		<item>7</item>
-		<item>8</item>
-		<item>9</item>
-		<item>10</item>
-		<item>11</item>
-		<item>12</item>
-	</string-array>
-
-	<string-array name="sound_entries">
-		<item>Tiny bell</item>
-		<item>Small bell</item>
-		<item>Large bell</item>
-		<item>Text-to-speech</item>
-	</string-array>
-	<string-array name="sound_values">
-		<item>tiny</item>
-		<item>small</item>
-		<item>large</item>
-		<item>tts</item>
 	</string-array>
 
 	<string-array name="click_entries">
 		<item>No click</item>
-		<item>Only twice at the last sound</item>
+		<item>Only twice at the last bell</item>
 		<item>2 clicks at most</item>
 		<item>3 clicks at most</item>
 		<item>4 clicks at most</item>
@@ -116,22 +87,9 @@
 		<item>6</item>
 	</string-array>
 
-	<string-array name="preparation_entries">
-		<item>3 seconds</item>
-		<item>10 seconds with clicks</item>
-		<item>10 seconds with a melody</item>
-		<item>20 seconds with a gong</item>
-	</string-array>
-	<string-array name="preparation_values">
-		<item>no</item>
-		<item>clicks</item>
-		<item>melody</item>
-		<item>gong</item>
-	</string-array>
-
 	<string name="about_text">
-		<b>Pāli Platform Meditation Timer</b> 1.2.0\n
-		<small>(Foreground Player version)</small>\n
+		<b>Pāli Platform Meditation Timer (S)</b> 1.0.0\n
+		<small>(Simple Player version)</small>\n
 		<small>Licensed under the Apache License, Version 2.0</small>\n
 		\n
 		<i>A minimalist but usable med-timer</i>\n
@@ -143,18 +101,18 @@
 		\n
 		<b>Simple uses:</b>\n
 		• Go to Settings\n
-		• Select an interval between 5-60 minutes\n
-		• Select the repeat up to 12 times\n
-		• Select the alarm either bells or TTS\n
-		• Select if leading clicks are also added\n
-		• Select if a preparation is used\n
+		• Select an interval between 5-20 minutes\n
+		• Select the repeat up to 6 times\n
+		• Select if tailing clicks are also added\n
+		• Select if a Text-to-speech marker is used\n
+		• Select if the 20-sec preparation is used\n
 		• Select if the device is kept awake\n
 		• Go to Timer and press START\n
 		• The session can be paused and resumed\n
 		• Press the reset button to cancel the session\n
 		• The settings are saved for the next use\n
 		• Long press the reset button to restore the default settings\n
-		• Use Live mode to arbitrarily ring the bell\n
+		• Use Live mode to arbitrarily ring bells\n
 		</small>
 		\n
 		Copyright © 2023 J.R. Bhaddacak \n

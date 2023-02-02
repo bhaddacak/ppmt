@@ -15,26 +15,20 @@
 		android:entryValues="@array/repeat_times_values"
 		android:defaultValue="2" />
 	<ListPreference
-		android:key="pref_sound"
-		android:title="@string/sound_title"
-		android:dialogTitle="@string/sound_dialog_title"
-		android:entries="@array/sound_entries"
-		android:entryValues="@array/sound_values"
-		android:defaultValue="small" />
-	<ListPreference
 		android:key="pref_click"
 		android:title="@string/click_title"
 		android:dialogTitle="@string/click_dialog_title"
 		android:entries="@array/click_entries"
 		android:entryValues="@array/click_values"
 		android:defaultValue="1" />
-	<ListPreference
+	<CheckBoxPreference
+		android:key="pref_ttsmarker"
+		android:title="@string/ttsmarker_title"
+		android:defaultValue="false" />
+	<CheckBoxPreference
 		android:key="pref_preparation"
 		android:title="@string/preparation_title"
-		android:dialogTitle="@string/preparation_dialog_title"
-		android:entries="@array/preparation_entries"
-		android:entryValues="@array/preparation_values"
-		android:defaultValue="clicks" />
+		android:defaultValue="true" />
 	<CheckBoxPreference
 		android:key="pref_keepscreenon"
 		android:title="@string/keepscreenon_title"

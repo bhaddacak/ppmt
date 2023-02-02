@@ -6,9 +6,9 @@ SDKPATH=/opt/android-sdk/build-tools/29.0.3
 PLATFORM=/usr/lib/android-sdk/platforms/android-23/android.jar
 MINSDK=19
 SRCPATH=src
-APPPATH=$(SRCPATH)/paliplatform/tools/ppmt
-VERSION=1.2.0
-OUTPUT=ppmt-$(VERSION)
+APPPATH=$(SRCPATH)/paliplatform/tools/ppmts
+VERSION=1.0.0
+OUTPUT=ppmts-$(VERSION)
 OBJPATH=obj
 
 JAVAS=$(wildcard $(APPPATH)/*.java)
