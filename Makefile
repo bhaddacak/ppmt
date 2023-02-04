@@ -8,7 +8,7 @@ MINSDK=19
 SRCPATH=src
 APPPATH=$(SRCPATH)/paliplatform/tools/ppmts
 VERSION=1.0.0
-OUTPUT=ppmts-$(VERSION)
+OUTPUT=ppmt-simple-$(VERSION)
 OBJPATH=obj
 
 JAVAS=$(wildcard $(APPPATH)/*.java)
