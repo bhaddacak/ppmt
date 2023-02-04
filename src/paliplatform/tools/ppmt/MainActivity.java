@@ -44,7 +44,6 @@ import android.preference.PreferenceManager;
 //~ 		Toast.makeText(MainActivity.this, ""+currPosition, Toast.LENGTH_SHORT).show();
 
 public class MainActivity extends Activity {
-	public static final int ONE_MINUTE_MILLIS = 60000;
 	private SharedPreferences prefs;
 	private Intent playerServiceIntent;
 	private ComponentName playerServiceCompName;

@@ -26,8 +26,8 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.Binder;
 import android.os.CountDownTimer;
+import android.os.Looper;
 import android.media.MediaPlayer;
-import android.media.AudioManager;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 
@@ -42,6 +42,7 @@ public class PlayerService extends Service {
 	private MediaPlayer bellPlayer;
 	private MediaPlayer silencePlayer;
 	private CountDownTimer silenceTimer;
+	private Looper silenceLooper;
 	private TextToSpeech tts;
 	private boolean settingsEnabled;
 	private int interval;
@@ -85,6 +86,10 @@ public class PlayerService extends Service {
 			bellPlayer.release();
 		if (silencePlayer != null)
 			silencePlayer.release();
+		if (silenceTimer != null)
+			silenceTimer.cancel();
+		if (silenceLooper != null)
+			silenceLooper.quit();
 		if (tts != null)
 			tts.shutdown();
 		super.onDestroy();
@@ -127,6 +132,10 @@ public class PlayerService extends Service {
 	}
 
 	public void stopSession() {
+		if (silenceTimer != null)
+			silenceTimer.cancel();
+		if (silenceLooper != null)
+			silenceLooper.quit();
 		stopForeground(true);
 		runningState = false;
 	}
@@ -163,6 +172,8 @@ public class PlayerService extends Service {
 	private Runnable doThreadProcessing = new Runnable() {
 		@Override
 		public void run() {
+			silenceLooper = Looper.myLooper();
+			silenceLooper.prepare();
 			silenceAndRing();
 		}
 	};
@@ -181,6 +192,7 @@ public class PlayerService extends Service {
 				stopSession();
 			}
 		}
+		silenceLooper.loop();
 	}
 
 	private MediaPlayer.OnCompletionListener bellCompleteListener = new MediaPlayer.OnCompletionListener() {

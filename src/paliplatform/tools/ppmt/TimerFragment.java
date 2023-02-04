@@ -187,7 +187,7 @@ public class TimerFragment extends Fragment {
 		timerDisplay.setText(formatMillis(lastMillis, false));
 		updateRepeatDisplay();
 		updateProgressBar();
-		updateElapsedTime();
+		updateElapsingTime();
 	}
 
 	private void updateRepeatDisplay() {
@@ -207,7 +207,7 @@ public class TimerFragment extends Fragment {
 		timerProgress.setProgress((int)progress);
 	}
 
-	private void updateElapsedTime() {
+	private void updateElapsingTime() {
 		if (elapseDisplay == null || totalDisplay == null) return;
 		final long elapsed = totalMillis - remMillis;
 		elapseDisplay.setText(formatMillis(elapsed, true));
