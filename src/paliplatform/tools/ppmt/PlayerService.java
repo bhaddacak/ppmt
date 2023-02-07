@@ -183,16 +183,17 @@ public class PlayerService extends Service {
 		if (currRepeat == 0) {
 			currSilence = 1;
 			prepare();
+			silenceLooper.loop();
 		} else {
 			if (currRepeat <= repeat) {
 				currSilence = 1;
 				silence();
+				silenceLooper.loop();
 			} else {
 				currRepeat = 0;
 				stopSession();
 			}
 		}
-		silenceLooper.loop();
 	}
 
 	private MediaPlayer.OnCompletionListener bellCompleteListener = new MediaPlayer.OnCompletionListener() {

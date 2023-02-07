@@ -15,7 +15,7 @@ The main problem of med-timer apps on Android is they get killed or suppressed b
 
 I experimented with several implementations to tackle this problem. I see this as a problem because it makes no sense that while you meditate and you have to keep the device's screen on, just sounds are desirable. Using CountDownTimer as background service fails, as well as, the foreground version of it which is a little better but unpredictable. Using AlarmManager fails sometimes (I still have no clue why it fails or works in some settings).
 
-Finally, I apply my own method that I use with my meditation tracks. So, the app is in fact a media player in essence, but programmed for this specific use. For some information on the implementation, see `README.md` of the `simple` branch.
+Finally, I apply my own method that I use with my meditation tracks. So, the app is in fact a media player in essence, but programmed for this specific use. For some information on the implementation, see [README.md](https://github.com/bhaddacak/ppmt/tree/simple#readme) of the *simple* branch.
 
 ## Android application development in frugal environment
 
@@ -33,7 +33,7 @@ $ sudo apt-get install android-sdk android-sdk-platform-23 make adb
 
 For now, only platform-23 or Android 6.0 platform (API level 23) is available, even the build-tools is now version 29.0.3. It might be possible if we use a newer platform according to the build-tools (I have never tried this yet). In that case, you can install other versions of platform by yourself, either by Debian's helper installer or by `sdkmanager` (described below).
 
-As far as my recent update goes, now `dx` (a tool converting Java classes to the Dalvik code) disappears from the Debian build-tools. It seems to be repackaged as `dalvik-exchange` (still uavailable in my Devuan's repository). So, if you are lucky, you can install `dx` separately by this command:
+As far as my recent update goes, now `dx` (a tool converting Java classes to the Dalvik code) disappears from the Debian build-tools. It seems to be repackaged as `dalvik-exchange` (still uavailable in Devuan's repository). So, you may need to install `dx` separately by this command:
 
 ```
 $ sudo apt-get install dalvik-exchange
