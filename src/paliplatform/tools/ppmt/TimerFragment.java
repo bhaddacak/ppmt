@@ -29,7 +29,6 @@ import android.widget.TextView;
 import android.widget.ProgressBar;
 import android.graphics.drawable.Drawable;
 import android.graphics.Rect;
-import android.media.MediaPlayer;
 import android.preference.PreferenceManager;
 
 // for debug
@@ -76,7 +75,7 @@ public class TimerFragment extends Fragment {
 		prefs = mainAct.getPrefs();
 		interval = Integer.parseInt(prefs.getString("pref_interval", "15"));
 		repeat = Integer.parseInt(prefs.getString("pref_repeat", "2"));
-		preparation = prefs.getString("pref_preparation", "clicks");
+		preparation = prefs.getString("pref_preparation", "click");
 		preMillis = preparation.equals("no") ? 3000 : preparation.equals("gong") ? 20000 : 10000;
 		if (playerService == null || !playerService.isRunning() || totalMillis == 0)
 			initMillis();
@@ -180,7 +179,7 @@ public class TimerFragment extends Fragment {
 			} else {
 				int duration = playerService.getDuration();
 				int position = playerService.getCurrPosition();
-				if (duration > 0 && position >= 0)
+				if (duration > 0 && position >= 0 && duration - position >= 0)
 					lastMillis = duration - position;
 			}
 		}

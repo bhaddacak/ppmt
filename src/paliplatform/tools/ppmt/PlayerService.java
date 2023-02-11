@@ -16,6 +16,10 @@
 
 package paliplatform.tools.ppmt;
 
+import java.util.List;
+import java.util.HashMap;
+import java.util.Arrays;
+
 import android.app.Service;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -25,8 +29,6 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Binder;
-import android.os.CountDownTimer;
-import android.os.Looper;
 import android.media.MediaPlayer;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
@@ -41,11 +43,10 @@ public class PlayerService extends Service {
 	private IBinder playerServiceBinder;
 	private MediaPlayer bellPlayer;
 	private MediaPlayer silencePlayer;
-	private CountDownTimer silenceTimer;
-	private Looper silenceLooper;
 	private TextToSpeech tts;
 	private boolean settingsEnabled;
 	private int interval;
+	private HashMap<Integer, Integer> intervalMap;
 	private int repeat;
 	private String sound;
 	private int clickOption;
@@ -55,8 +56,6 @@ public class PlayerService extends Service {
 	private boolean runningState;
 	private int currRepeat;
 	private int currPosition;
-	private int totalSilenceCount;
-	private int currSilence;
 
 	@Override
 	public void onCreate() {
@@ -69,10 +68,20 @@ public class PlayerService extends Service {
 							.setContentTitle(getResources().getString(R.string.noti_message))
 							.setContentIntent(null);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		preparation = prefs.getString("pref_preparation", "clicks");
-		prepareMillis = preparation.equals("gong") ? 20000
-						: preparation.equals("clicks") || preparation.equals("melody") ? 10000
-						: 3000;
+		intervalMap = new HashMap<>();
+		final List<String> intervalValues = Arrays.asList(getResources().getStringArray(R.array.interval_times_values));
+		for (final String s : intervalValues) {
+			final int intv = Integer.parseInt(s);
+			switch (intv) {
+				case 1: intervalMap.put(intv, R.raw.silence1_click); break;
+				case 5: intervalMap.put(intv, R.raw.silence5_click); break;
+				case 10: intervalMap.put(intv, R.raw.silence10_click); break;
+				case 15: intervalMap.put(intv, R.raw.silence15_click); break;
+				case 20: intervalMap.put(intv, R.raw.silence20_click); break;
+			}
+		}
+		preparation = prefs.getString("pref_preparation", "click");
+		prepareMillis = preparation.equals("no") ? 3000 : preparation.equals("gong") ? 20000 : 10000;
 	}
 
 	@Override
@@ -86,10 +95,6 @@ public class PlayerService extends Service {
 			bellPlayer.release();
 		if (silencePlayer != null)
 			silencePlayer.release();
-		if (silenceTimer != null)
-			silenceTimer.cancel();
-		if (silenceLooper != null)
-			silenceLooper.quit();
 		if (tts != null)
 			tts.shutdown();
 		super.onDestroy();
@@ -100,12 +105,9 @@ public class PlayerService extends Service {
 		repeat = Integer.parseInt(prefs.getString("pref_repeat", "2"));
 		sound = prefs.getString("pref_sound", "small");
 		clickOption = Integer.parseInt(prefs.getString("pref_click", "1"));
-		preparation = prefs.getString("pref_preparation", "clicks");
-		prepareMillis = preparation.equals("gong") ? 20000
-						: preparation.equals("clicks") || preparation.equals("melody") ? 10000
-						: 3000;
+		preparation = prefs.getString("pref_preparation", "click");
+		prepareMillis = preparation.equals("no") ? 3000 : preparation.equals("gong") ? 20000 : 10000;
 		currRepeat = 0;
-		totalSilenceCount = interval; // we have 1-min silence piece
 		runningState = true;
 		startPlayerTask();
 		startForeground(NOTI_ID, notiBuilder.build());
@@ -132,17 +134,11 @@ public class PlayerService extends Service {
 	}
 
 	public void stopSession() {
-		if (silenceTimer != null)
-			silenceTimer.cancel();
-		if (silenceLooper != null)
-			silenceLooper.quit();
 		stopForeground(true);
 		runningState = false;
 	}
 
 	public void stopPlayers() {
-		if (silenceTimer != null)
-			silenceTimer.cancel();
 		stopPlayers(null);
 	}
 
@@ -172,8 +168,6 @@ public class PlayerService extends Service {
 	private Runnable doThreadProcessing = new Runnable() {
 		@Override
 		public void run() {
-			silenceLooper = Looper.myLooper();
-			silenceLooper.prepare();
 			silenceAndRing();
 		}
 	};
@@ -181,14 +175,10 @@ public class PlayerService extends Service {
 	private void silenceAndRing() {
 		if (!runningState) return;
 		if (currRepeat == 0) {
-			currSilence = 1;
 			prepare();
-			silenceLooper.loop();
 		} else {
 			if (currRepeat <= repeat) {
-				currSilence = 1;
 				silence();
-				silenceLooper.loop();
 			} else {
 				currRepeat = 0;
 				stopSession();
@@ -196,7 +186,7 @@ public class PlayerService extends Service {
 		}
 	}
 
-	private MediaPlayer.OnCompletionListener bellCompleteListener = new MediaPlayer.OnCompletionListener() {
+	private MediaPlayer.OnCompletionListener soundCompleteListener = new MediaPlayer.OnCompletionListener() {
 		@Override
 		public void onCompletion(final MediaPlayer mp) {
 			alarm();
@@ -214,29 +204,32 @@ public class PlayerService extends Service {
 			switch (clickOption) {
 				case 0:
 					if (sound.startsWith("tts")) {
-						final int num = currRepeat * interval;
+						final int mins = currRepeat * interval;
 						final String lastEnding = currRepeat == repeat ? getResources().getString(R.string.tts_last) : "";
-						final String phrase = num + getResources().getString(R.string.tts_loop) + lastEnding;
+						final String phrase = mins + getResources().getString(R.string.tts_loop) + lastEnding;
 						new TtsPlayer(phrase).speak();
 					} else {
-						ring(sound);
+						if (!sound.equals("no"))
+							ring(sound);
 					}
 					break;
 				case 1:
 					if (sound.startsWith("tts")) {
-						final int num = currRepeat * interval;
+						final int mins = currRepeat * interval;
 						final String lastEnding = currRepeat == repeat ? getResources().getString(R.string.tts_last) : "";
-						final String phrase = num + getResources().getString(R.string.tts_loop) + lastEnding;
+						final String phrase = mins + getResources().getString(R.string.tts_loop) + lastEnding;
 						if (currRepeat == repeat) {
-							new LeadingClickPlayer(2, phrase).play();
+							new ClickPlayer(2, phrase, AlarmMode.TTS).play();
 						} else {
 							new TtsPlayer(phrase).speak();
 						}
 					} else {
-						if (currRepeat == repeat)
-							new LeadingClickPlayer(2, getBell(sound)).play();
-						else
-							ring(sound);
+						if (currRepeat == repeat) {
+							new ClickPlayer(2, sound, AlarmMode.BELL).play();
+						} else {
+							if (!sound.equals("no"))
+								ring(sound);
+						}
 					}
 					break;
 				case 2:
@@ -245,13 +238,14 @@ public class PlayerService extends Service {
 				case 5:
 				case 6:
 					final int clickCount = currRepeat % clickOption;
-					final int num = currRepeat * interval;
+					final int clickAdded = clickCount == 0 ? clickOption - 1 : clickCount - 1;
+					final int mins = currRepeat * interval;
 					final String lastEnding = currRepeat == repeat ? getResources().getString(R.string.tts_last) : "";
-					final String phrase = num + getResources().getString(R.string.tts_loop) + lastEnding;
+					final String phrase = mins + getResources().getString(R.string.tts_loop) + lastEnding;
 					if (sound.startsWith("tts"))
-						new LeadingClickPlayer((clickCount==0?clickOption:clickCount), phrase).play();
+						new ClickPlayer(clickAdded, phrase, AlarmMode.TTS).play();
 					else
-						new LeadingClickPlayer((clickCount==0?clickOption:clickCount), getBell(sound)).play();
+						new ClickPlayer(clickAdded, sound, AlarmMode.BELL).play();
 					break;
 			}
 		}
@@ -263,38 +257,18 @@ public class PlayerService extends Service {
 		currPlayState = PlayState.SILENCE;
 		final int sndId = preparation.equals("gong") ? R.raw.prepare_gong
 							: preparation.equals("melody") ? R.raw.prepare_melody
-							: preparation.equals("clicks") ? R.raw.prepare_clicks
+							: preparation.equals("click") ? R.raw.prepare_click
 							: R.raw.prepare_3sec;
 		silencePlayer = MediaPlayer.create(this, sndId);
-		silencePlayer.setOnCompletionListener(bellCompleteListener);
+		silencePlayer.setOnCompletionListener(soundCompleteListener);
 		silencePlayer.start();
 	}
 
 	private void silence() {
 		currPlayState = PlayState.SILENCE;
-		silencePlayer = MediaPlayer.create(this, R.raw.silence_melody);
+		silencePlayer = MediaPlayer.create(this, intervalMap.get(interval));
+		silencePlayer.setOnCompletionListener(soundCompleteListener);
 		silencePlayer.start();
-		startSilenceTimer();
-	}
-
-	private void startSilenceTimer() {
-		silenceTimer = new CountDownTimer(ONE_MINUTE_MILLIS, 1000) {
-			@Override
-			public void onTick(final long millisUntilFinished) {
-			}
-			@Override
-			public void onFinish() {
-				silenceTimer.cancel();
-				stopPlayers(PlayState.SILENCE);
-				if (currSilence < totalSilenceCount) {
-					currSilence++;
-					silence();
-				} else {
-					alarm();
-				}
-			}
-		};
-		silenceTimer.start();
 	}
 
 	public int getCurrRepeat() {
@@ -314,8 +288,7 @@ public class PlayerService extends Service {
 		int pos = -1;
 		try {
 			if (silencePlayer != null) {
-				final int base = currRepeat == 0 ? 0 : (currSilence - 1) * ONE_MINUTE_MILLIS;
-				pos = base + silencePlayer.getCurrentPosition();
+				pos = silencePlayer.getCurrentPosition();
 			}
 		} catch (IllegalStateException e) {
 			pos = -1;
@@ -325,21 +298,25 @@ public class PlayerService extends Service {
 
 	public int getDuration() {
 		if (currPlayState == PlayState.BELL) return -1;
-		final int dur;
+		int dur = -1;
 		if (silencePlayer != null) {
 			if (currRepeat == 0) {
 				dur = prepareMillis;
 			} else {
-				dur = totalSilenceCount * ONE_MINUTE_MILLIS;
+				try {
+					dur = silencePlayer.getDuration();
+				} catch (IllegalStateException e) {
+					dur = -1;
+				}
 			}
-		} else {
-			dur = -1;
 		}
 		return dur;
 	}
 
 	private void ring(final String bell) {
-		bellPlayer = MediaPlayer.create(this, getBell(bell));
+		final int bellId = getBell(bell);
+		if (bellId == -1) return;
+		bellPlayer = MediaPlayer.create(this, bellId);
 		bellPlayer.start();
 	}
 
@@ -349,8 +326,10 @@ public class PlayerService extends Service {
 			bell = R.raw.bell_tiny;
 		} else if ("small".equals(snd)) {
 			bell = R.raw.bell_small;
-		} else {
+		} else if ("large".equals(snd)) {
 			bell = R.raw.bell_large;
+		} else {
+			bell = -1;
 		}
 		return bell;
 	}
@@ -394,41 +373,37 @@ public class PlayerService extends Service {
 		}
 	}
 
-	public class LeadingClickPlayer {
+	public class ClickPlayer {
 		private final int totalClicks;
-		private final int bellId;
-		private final String phrase;
+		private final String bellOrPhrase;
 		private AlarmMode mode;
 		private int currClick;
-		public LeadingClickPlayer(final int total, final int bell) {
-			mode = AlarmMode.BELL;
-			totalClicks = total;
-			bellId = bell;
-			phrase = "";
-			currClick = 1;
-		}
-		public LeadingClickPlayer(final int total, final String text) {
-			mode = AlarmMode.TTS;
-			totalClicks = total;
-			bellId = 0;
-			phrase = text;
-			currClick = 1;
+		public ClickPlayer(final int total, final String param, final AlarmMode amode) {
+			mode = amode;
+			totalClicks = total < 0 ? 0 : total;
+			bellOrPhrase = param;
+			currClick = 0;
 		}
 		public void play() {
-			playClick();
+			proceed();
+		}
+		private void proceed() {
+			if (currClick < totalClicks) {
+				playClick();
+				currClick++;
+			} else {
+				if (mode == AlarmMode.TTS) {
+					playTTS();
+				} else {
+					if (!bellOrPhrase.equals("no"))
+						playBell();
+				}
+			}
 		}
 		private MediaPlayer.OnCompletionListener clickCompleteListener = new MediaPlayer.OnCompletionListener() {
 			@Override
 			public void onCompletion(final MediaPlayer mp) {
-				if (currClick < totalClicks) {
-					currClick++;
-					playClick();
-				} else {
-					if (mode == AlarmMode.TTS)
-						playTTS();
-					else
-						playBell();
-				}
+				proceed();
 			}
 		};
 		private void playClick() {
@@ -437,11 +412,13 @@ public class PlayerService extends Service {
 			bellPlayer.start();
 		}
 		private void playBell() {
+			final int bellId = getBell(bellOrPhrase);
+			if (bellId == -1) return;
 			bellPlayer = MediaPlayer.create(PlayerService.this, bellId);
 			bellPlayer.start();
 		}
 		private void playTTS() {
-			new TtsPlayer(phrase).speak();
+			new TtsPlayer(bellOrPhrase).speak();
 		}
 	}
 }

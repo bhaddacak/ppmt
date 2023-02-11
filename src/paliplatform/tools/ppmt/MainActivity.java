@@ -197,6 +197,7 @@ public class MainActivity extends Activity {
 		timerFragment.updateTimerDisplay(true);
 		timerFragment.updateStartButton();
 		unbindPlayerService();
+		stopLiveBellPlayer();
 		if (prefs.getBoolean("pref_keepscreenon", false))
 			keepAwake(false);
 	}
@@ -238,6 +239,16 @@ public class MainActivity extends Activity {
 		if (liveFragment == null) return;
 		liveBellPlayer = MediaPlayer.create(this, liveBellMap.get(((LiveFragment)liveFragment).getCurrBell()));
 		liveBellPlayer.start();
+	}
+
+	private void stopLiveBellPlayer() {
+		try {
+			if (liveBellPlayer != null) {
+				liveBellPlayer.stop();
+				liveBellPlayer = null;
+			}
+		} catch (IllegalStateException e) {
+		}
 	}
 
 	public void onBellSizeClicked(final View view) {
