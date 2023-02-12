@@ -18,15 +18,15 @@
 	<string name="repeat_dialog_title">Number of repeat:</string>
 	<string name="click_title">Tailing clicks</string>
 	<string name="click_dialog_title">Tailing clicks to use:</string>
-	<string name="ttsmarker_title">Text-to-speech markers</string>
-	<string name="ttsmarker_summ_yes">Use TTS markers</string>
+	<string name="ttsmarker_title">Voice (TTS) markers</string>
+	<string name="ttsmarker_summ_yes">Use voice markers</string>
 	<string name="ttsmarker_summ_no">No marker</string>
 	<string name="preparation_title">Preparation</string>
 	<string name="preparation_summ_yes">Use 20-sec preparation bell</string>
 	<string name="preparation_summ_no">No preparation</string>
 	<string name="keepscreenon_title">Keep screen on</string>
 	<string name="keepscreenon_summ_yes">Stay awake during the session</string>
-	<string name="keepscreenon_summ_no">Use the system sleep setting</string>
+	<string name="keepscreenon_summ_no">Use the system\'s sleep setting</string>
 
 	<string name="bell_tiny">Tiny bell</string>
 	<string name="bell_small">Small bell</string>
@@ -39,10 +39,10 @@
 	<string name="noti_message">Meditation timer is running</string>
 
 	<string-array name="interval_times_entries">
-		<item>5 min.</item>
-		<item>10 min.</item>
-		<item>15 min.</item>
-		<item>20 min.</item>
+		<item>5 minutes</item>
+		<item>10 minutes</item>
+		<item>15 minutes</item>
+		<item>20 minutes</item>
 	</string-array>
 	<string-array name="interval_times_values">
 		<item>5</item>
@@ -88,7 +88,7 @@
 	</string-array>
 
 	<string name="about_text">
-		<b>Pāli Platform Meditation Timer (S)</b> 1.0.0\n
+		<b>Pāli Platform Meditation Timer (S)</b> 1.0.1\n
 		<small>(Simple Player version)</small>\n
 		<small>Licensed under the Apache License, Version 2.0</small>\n
 		\n
@@ -102,9 +102,9 @@
 		<b>Simple uses:</b>\n
 		• Go to Settings\n
 		• Select an interval between 5-20 minutes\n
-		• Select the repeat up to 6 times\n
+		• Select a repeat up to 6 times\n
 		• Select if tailing clicks are also added\n
-		• Select if Text-to-speech markers are used\n
+		• Select if voice (TTS) markers are used\n
 		• Select if the 20-sec preparation is used\n
 		• Select if the device is kept awake\n
 		• Go to Timer and press START\n

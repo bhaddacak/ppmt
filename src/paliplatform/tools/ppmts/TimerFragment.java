@@ -174,7 +174,7 @@ public class TimerFragment extends Fragment {
 		} else {
 			int duration = playerService.getDuration();
 			int position = playerService.getCurrPosition();
-			if (duration > 0 && position >= 0)
+			if (duration > 0 && position >= 0 && duration - position >= 0)
 				lastMillis = duration - position;
 			else
 				lastMillis = hasPreparation ? preMillis : interval * PlayerService.ONE_MINUTE_MILLIS;
