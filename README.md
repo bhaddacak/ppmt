@@ -149,7 +149,8 @@ When you use `sdkmanager`, the packages downloaded will be installed to `/opt/an
 * [Android SDK Documentation up to API level 24](http://dl.google.com/android/repository/docs-24_r01.zip)
 * [Support v.7 Demos](https://drive.google.com/file/d/1ZpfiUJQhE2GPIPrXzdj7cz-65LEKkYhk/view?usp=sharing)
 * [Support v.13 Demos](https://drive.google.com/file/d/1MxiRnpKAsz_d5rQ2rOt9W4ppTFmUJpL6/view?usp=sharing)
-* [Pāli Platform](http://paliplatform.blogspot.com)
+* [Pāli Platform](https://bhaddacak.github.io/paliplatform)
+* [The author's website](https://bhaddacak.github.io)
 
 ## License
 ```

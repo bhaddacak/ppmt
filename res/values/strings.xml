@@ -82,17 +82,25 @@
 
 	<string-array name="sound_entries">
 		<item>No alarm, just clicks</item>
+		<item>Only clicks + Tiny bell</item>
 		<item>Tiny bell</item>
+		<item>Tiny + Small bell</item>
+		<item>Tiny + Large bell</item>
 		<item>Small bell</item>
+		<item>Small + Large bell</item>
 		<item>Large bell</item>
 		<item>Voice</item>
 	</string-array>
 	<string-array name="sound_values">
-		<item>no</item>
-		<item>tiny</item>
-		<item>small</item>
-		<item>large</item>
-		<item>tts</item>
+		<item>no-no</item>
+		<item>no-tiny</item>
+		<item>tiny-tiny</item>
+		<item>tiny-small</item>
+		<item>tiny-large</item>
+		<item>small-small</item>
+		<item>small-large</item>
+		<item>large-large</item>
+		<item>tts-tts</item>
 	</string-array>
 
 	<string-array name="click_entries">
@@ -128,7 +136,7 @@
 	</string-array>
 
 	<string name="about_text">
-		<b>Pāli Platform Meditation Timer</b> 1.3.0\n
+		<b>Pāli Platform Meditation Timer</b> 1.3.1\n
 		<small>Licensed under the Apache License, Version 2.0</small>\n
 		\n
 		<i>A minimalist but usable med-timer</i>\n
@@ -155,7 +163,7 @@
 		</small>
 		\n
 		Copyright © 2023 J.R. Bhaddacak \n
-		<small>See further at <b><i>paliplatform.blogspot.com</i></b></small>
+		<small>See further at <b><i>https://bhaddacak.github.io/ppmt</i></b></small>
 		\n
 	</string>
 

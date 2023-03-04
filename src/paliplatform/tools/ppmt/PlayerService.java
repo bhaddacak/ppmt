@@ -49,6 +49,7 @@ public class PlayerService extends Service {
 	private HashMap<Integer, Integer> intervalMap;
 	private int repeat;
 	private String sound;
+	private String lastBell;
 	private int clickOption;
 	private String preparation;
 	private int prepareMillis;
@@ -103,7 +104,9 @@ public class PlayerService extends Service {
 	public void startSession() {
 		interval = Integer.parseInt(prefs.getString("pref_interval", "15"));
 		repeat = Integer.parseInt(prefs.getString("pref_repeat", "2"));
-		sound = prefs.getString("pref_sound", "small");
+		final String[] soundOptions = prefs.getString("pref_sound", "small-large").split("-");
+		sound = soundOptions[0];
+		lastBell = soundOptions[1];
 		clickOption = Integer.parseInt(prefs.getString("pref_click", "1"));
 		preparation = prefs.getString("pref_preparation", "click");
 		prepareMillis = preparation.equals("no") ? 3000 : preparation.equals("gong") ? 20000 : 10000;
@@ -209,8 +212,15 @@ public class PlayerService extends Service {
 						final String phrase = mins + getResources().getString(R.string.tts_loop) + lastEnding;
 						new TtsPlayer(phrase).speak();
 					} else {
-						if (!sound.equals("no"))
-							ring(sound);
+						if (sound.equals("no")) {
+							if (currRepeat == repeat)
+								ring(lastBell);
+						} else {
+							if (currRepeat == repeat)
+								ring(lastBell);
+							else
+								ring(sound);
+						}
 					}
 					break;
 				case 1:
@@ -225,7 +235,7 @@ public class PlayerService extends Service {
 						}
 					} else {
 						if (currRepeat == repeat) {
-							new ClickPlayer(2, sound, AlarmMode.BELL).play();
+							new ClickPlayer(2, lastBell, AlarmMode.BELL).play();
 						} else {
 							if (!sound.equals("no"))
 								ring(sound);
@@ -239,13 +249,15 @@ public class PlayerService extends Service {
 				case 6:
 					final int clickCount = currRepeat % clickOption;
 					final int clickAdded = clickCount == 0 ? clickOption - 1 : clickCount - 1;
-					final int mins = currRepeat * interval;
-					final String lastEnding = currRepeat == repeat ? getResources().getString(R.string.tts_last) : "";
-					final String phrase = mins + getResources().getString(R.string.tts_loop) + lastEnding;
-					if (sound.startsWith("tts"))
+					if (sound.startsWith("tts")) {
+						final int mins = currRepeat * interval;
+						final String lastEnding = currRepeat == repeat ? getResources().getString(R.string.tts_last) : "";
+						final String phrase = mins + getResources().getString(R.string.tts_loop) + lastEnding;
 						new ClickPlayer(clickAdded, phrase, AlarmMode.TTS).play();
-					else
-						new ClickPlayer(clickAdded, sound, AlarmMode.BELL).play();
+					} else {
+						final String bell = currRepeat == repeat ? lastBell : sound;
+						new ClickPlayer(clickAdded, bell, AlarmMode.BELL).play();
+					}
 					break;
 			}
 		}
