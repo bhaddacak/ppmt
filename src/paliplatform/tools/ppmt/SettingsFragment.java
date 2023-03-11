@@ -59,6 +59,12 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 			final String sound = sharedPreferences.getString(key, "");
 			final int ind = soundValues.indexOf(sound);
 			pref.setSummary(soundEntries[ind]);
+		} else if ("pref_ending_bell".equals(key)) {
+			final String[] endingBellEntries = getResources().getStringArray(R.array.ending_bell_entries);
+			final List<String> endingBellValues = Arrays.asList(getResources().getStringArray(R.array.ending_bell_values));
+			final String ending_bell = sharedPreferences.getString(key, "");
+			final int ind = endingBellValues.indexOf(ending_bell);
+			pref.setSummary(endingBellEntries[ind]);
 		} else if ("pref_click".equals(key)) {
 			final String[] clickEntries = getResources().getStringArray(R.array.click_entries);
 			final List<String> clickValues = Arrays.asList(getResources().getStringArray(R.array.click_values));
@@ -87,6 +93,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 		updateSummary(prefs, "pref_interval");
 		updateSummary(prefs, "pref_repeat");
 		updateSummary(prefs, "pref_sound");
+		updateSummary(prefs, "pref_ending_bell");
 		updateSummary(prefs, "pref_click");
 		updateSummary(prefs, "pref_preparation");
 		updateSummary(prefs, "pref_keepscreenon");

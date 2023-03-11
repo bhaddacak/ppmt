@@ -18,6 +18,8 @@
 	<string name="repeat_dialog_title">Number of repeat:</string>
 	<string name="sound_title">Sound</string>
 	<string name="sound_dialog_title">Sound to use:</string>
+	<string name="ending_bell_title">Ending bell</string>
+	<string name="ending_bell_dialog_title">Ending bell to use:</string>
 	<string name="click_title">Leading clicks</string>
 	<string name="click_dialog_title">Leading clicks to use:</string>
 	<string name="preparation_title">Preparation</string>
@@ -82,25 +84,30 @@
 
 	<string-array name="sound_entries">
 		<item>No alarm, just clicks</item>
-		<item>Only clicks + Tiny bell</item>
 		<item>Tiny bell</item>
-		<item>Tiny + Small bell</item>
-		<item>Tiny + Large bell</item>
 		<item>Small bell</item>
-		<item>Small + Large bell</item>
 		<item>Large bell</item>
 		<item>Voice</item>
 	</string-array>
 	<string-array name="sound_values">
-		<item>no-no</item>
-		<item>no-tiny</item>
-		<item>tiny-tiny</item>
-		<item>tiny-small</item>
-		<item>tiny-large</item>
-		<item>small-small</item>
-		<item>small-large</item>
-		<item>large-large</item>
-		<item>tts-tts</item>
+		<item>no</item>
+		<item>tiny</item>
+		<item>small</item>
+		<item>large</item>
+		<item>tts</item>
+	</string-array>
+
+	<string-array name="ending_bell_entries">
+		<item>Normal</item>
+		<item>Tiny bell</item>
+		<item>Small bell</item>
+		<item>Large bell</item>
+	</string-array>
+	<string-array name="ending_bell_values">
+		<item>no</item>
+		<item>tiny</item>
+		<item>small</item>
+		<item>large</item>
 	</string-array>
 
 	<string-array name="click_entries">
@@ -136,7 +143,7 @@
 	</string-array>
 
 	<string name="about_text">
-		<b>Pāli Platform Meditation Timer</b> 1.3.1\n
+		<b>Pāli Platform Meditation Timer</b> 1.3.2\n
 		<small>Licensed under the Apache License, Version 2.0</small>\n
 		\n
 		<i>A minimalist but usable med-timer</i>\n
@@ -151,6 +158,7 @@
 		• Select an interval between 1-20 minutes\n
 		• Select a repeat up to 12 times\n
 		• Select an alarm either bells or voice or none\n
+		• Select the ending bell to use, if needed\n
 		• Select a pattern of leading clicks\n
 		• Select a preparation to use\n
 		• Select if the device is kept awake\n
