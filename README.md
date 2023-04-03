@@ -33,7 +33,7 @@ $ sudo apt-get install android-sdk android-sdk-platform-23 make adb
 
 For now, only platform-23 or Android 6.0 platform (API level 23) is available, even the build-tools is now version 29.0.3. It might be possible if we use a newer platform according to the build-tools (I have never tried this yet). In that case, you can install other versions of platform by yourself, either by Debian's helper installer or by `sdkmanager` (described below).
 
-As far as my recent update goes, now `dx` (a tool converting Java classes to the Dalvik code) disappears from the Debian build-tools. It seems to be repackaged as `dalvik-exchange` (still uavailable in Devuan's repository). So, you may need to install `dx` separately by this command:
+As far as my recent update goes, now `dx` (a tool converting Java classes to the Dalvik code) disappears from the Debian build-tools (I use Davuan Daedalus). It seems to be repackaged as `dalvik-exchange`. So, you may need to install `dx` separately by this command:
 
 ```
 $ sudo apt-get install dalvik-exchange
